@@ -2,7 +2,7 @@
 
 #TO-DO
 #DONE	make path saved in table relative to directory holding dumbDB.py, to allow use on removable memory
-#	use file creation time if no EXIF data
+#DONE	use file timestamp if no EXIF data
 #DONE	for import, display image on screen and then prompt for tags
 #	for import, keep focus on terminal, autoclose displayed image after tags are entered
 #	for import, suggest tags (autofill suggestions from previously used tags)
@@ -49,27 +49,22 @@ if sys.argv[1] == "import":
 		dirpath = fullpath[:-len(filename)]
 		print dirpath
 		image = Image.open(fullpath)
-		#testing = datetime.datetime.strptime(image._getexif()[36867], "%Y:%m:%d %H:%M:%S")
-		#print testing
 		try:
-			date, time = image._getexif()[36867].split(' ')
-			print image._getexif()[36867]
+			dateAndTime = datetime.datetime.strptime(image._getexif()[36867], "%Y:%m:%d %H:%M:%S")
 		except:
 			print "No EXIF data found!"
-			#try:
-			#	
-			sys.exit()
+			try:
+				dateAndTime = datetime.datetime.fromtimestamp(os.path.getmtime(fullpath))
+			except:	
+				print "No file timestamp!?"
+				sys.exit()
 		image.thumbnail((800,800))
 		image.save("./temp.JPG","JPEG")
-	#	image.show()
 		p = subprocess.Popen(["display","./temp.JPG"])
 		input_string = raw_input("Enter space-delimited tags: ")
 		p.kill()
-		date = date.replace(':','-')
-		print date
-		print time
-		year, month, day = date.split('-')
-		month = MONTHS[int(month)-1]
+		print dateAndTime
+		month = MONTHS[dateAndTime.month-1]
 		print month
 		taglist = input_string.split(' ')
 		tags = ','.join(taglist)
@@ -78,22 +73,23 @@ if sys.argv[1] == "import":
 		#check for existing month directory, create if not exists
 		dirContents = os.listdir(DUMBDBDIR)
 		print dirContents
-		if month+year in dirContents:
-			print DUMBDBDIR+month+year+'/'+"  exists!"
+		dirCheck = DUMBDBDIR+month+str(dateAndTime.year)
+		if month+str(dateAndTime.year) in dirContents:
+			print dirCheck+'/'+"  exists!"
 		else:
-			print "Creating "+DUMBDBDIR+month+year
-			os.system("mkdir "+DUMBDBDIR+month+year)
+			print "Creating "+dirCheck
+			os.system("mkdir "+dirCheck)
 	
 		#copy file     filename = last six characters of hashstring
-		monthContents = os.listdir(DUMBDBDIR+month+year)
+		monthContents = os.listdir(DUMBDBDIR+month+str(dateAndTime.year))
 		fullHash = getHash(fullpath)
 		newName = fullHash[-6:]+'.'+extension
 		if newName in monthContents:
 			print "COLLISION!     Quitting..."
 			sys.exit()
 		else:
-			os.system("cp "+fullpath+" "+DUMBDBDIR+month+year+'/'+newName)
+			os.system("cp "+fullpath+" "+DUMBDBDIR+month+str(dateAndTime.year)+'/'+newName)
 	
 		#Add entry to table
 		with open(DUMBDBTABLE, 'a') as table:
-			table.write(newName+'\t'+'./dumbDBDir/'+month+year+'/'+'\t'+date+'\t'+tags+'\n')
+			table.write(newName+'\t'+'./dumbDBDir/'+month+str(dateAndTime.year)+'/'+'\t'+dateAndTime.strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
