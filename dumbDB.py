@@ -85,8 +85,8 @@ if sys.argv[1] == "import":
 		fullHash = getHash(fullpath)
 		newName = fullHash[-6:]+'.'+extension
 		if newName in monthContents:
-			print "COLLISION!     Quitting..."
-			sys.exit()
+			print "COLLISION!     Skipping..."
+			continue
 		else:
 			os.system("cp "+fullpath+" "+DUMBDBDIR+month+str(dateAndTime.year)+'/'+newName)
 	
