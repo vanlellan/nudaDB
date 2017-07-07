@@ -6,7 +6,12 @@
 #DONE	for import, display image on screen and then prompt for tags
 #	for import, keep focus on terminal, autoclose displayed image after tags are entered
 #	for import, suggest tags (autofill suggestions from previously used tags)
-
+#	check entire db for duplicate files on import?
+#	ability to search db and display images and edit tags
+#	implement optparse
+#	add option to remove file from original location upon successful import
+#DONE	allow wildcards on command line
+#	save previously entered tag-string history, accessible with up arrow
 
 import hashlib
 import sys, os
