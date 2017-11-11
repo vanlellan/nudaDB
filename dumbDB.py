@@ -11,7 +11,8 @@
 #	implement optparse
 #	add option to remove file from original location upon successful import
 #DONE	allow wildcards on command line
-#	save previously entered tag-string history, accessible with up arrow
+#	save previously entered tag-string history, accessible with up arrow (I think this requires a GUI...)
+#	change name to nudusDB/nudaDB/nudumDB. ('nudus' is latin for simple/unadorned/bare)
 
 import hashlib
 import sys, os
