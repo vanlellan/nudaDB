@@ -21,8 +21,8 @@ import sys, os
 from PIL import Image
 import subprocess
 import datetime
-from matplotlib import pyplot as plt
-
+from pyautogui import hotkey
+import time
 
 DUMBDBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/dumbDBDir/'
 print DUMBDBDIR
@@ -70,6 +70,8 @@ if sys.argv[1] == "import":
 		image.thumbnail((800,800))
 		image.save("./temp.JPG","JPEG")
 		p = subprocess.Popen(["display","./temp.JPG"])
+		time.sleep(0.1)#wait for display window to fully open
+		hotkey('alt','tab')#switch focus back to terminal
 		input_string = raw_input("Enter space-delimited tags: ")
 		p.kill()
 		print dateAndTime
@@ -98,7 +100,7 @@ if sys.argv[1] == "import":
 			continue
 		else:
 			os.system("cp "+fullpath+" "+DUMBDBDIR+month+str(dateAndTime.year)+'/'+newName)
-			os.system("mv "+fullpath+" "+DUMBDBDIR+"../inbox/imported/"+newName)
+#			os.system("mv "+fullpath+" "+DUMBDBDIR+"../inbox/imported/"+newName)
 	
 		#Add entry to table
 		with open(DUMBDBTABLE, 'a') as table:
