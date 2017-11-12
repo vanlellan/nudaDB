@@ -19,6 +19,7 @@ import sys, os
 from PIL import Image
 import subprocess
 import datetime
+from matplotlib import pyplot as plt
 
 
 DUMBDBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/dumbDBDir/'
