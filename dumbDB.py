@@ -1,19 +1,20 @@
+#!/usr/bin/python
 #dumbDB
 
 #TO-DO
 #DONE	make path saved in table relative to directory holding dumbDB.py, to allow use on removable memory
 #DONE	use file timestamp if no EXIF data
 #DONE	for import, display image on screen and then prompt for tags
-#	for import, keep focus on terminal, autoclose displayed image after tags are entered
+#DONE	for import, keep focus on terminal, autoclose displayed image after tags are entered
 #	for import, suggest tags (autofill suggestions from previously used tags)
 #	check entire db for duplicate files on import?
 #	ability to search db and display images and edit tags
 #	implement optparse
-#	add option to remove file from original location upon successful import
+#	add command line option to keep file in original location upon successful import
 #DONE	allow wildcards on command line
-#	save previously entered tag-string history, accessible with up arrow (I think this requires a GUI...)
+#DONE	save previously entered tag-string history, accessible with up arrow (importing readline makes raw_input do this automatically)
 #	change name to nudusDB/nudaDB/nudumDB. ('nudus' is latin for simple/unadorned/bare)
-#	make it 'standalone' executable
+#DONE	make it 'standalone' executable
 #	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
 
 import hashlib
@@ -23,12 +24,29 @@ import subprocess
 import datetime
 from pyautogui import hotkey
 import time
+import readline
 
-DUMBDBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/dumbDBDir/'
+#DUMBDBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/dumbDBDir/'		#this gets the directory of the python script
+DUMBDBDIR = os.getcwd() + '/dumbDBDir/'							#this gets the current working directory
 print DUMBDBDIR
-DUMBDBTABLE = os.path.dirname(os.path.abspath(sys.argv[0])) + '/dumbDBTable.txt'
+#DUMBDBTABLE = os.path.dirname(os.path.abspath(sys.argv[0])) + '/dumbDBTable.txt'
+DUMBDBTABLE = os.getcwd() + '/dumbDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+
+if sys.argv[1] == "install":
+	print 
+	os.system("mkdir ./dumbDBDir/")
+	os.system("mkdir ./inbox/")
+	os.system("mkdir ./inbox/imported/")
+	os.system("sudo ln -s ./dumbDB.py /bin/nudus")
+
+else:
+	if os.path.exists(DUMBDBDIR) and os.path.exists(DUMBDBTABLE):
+		print "Ready, Go!"
+	else:
+		print "Current directory, "+os.getcwd+", is not an installed DumbDB home directory."
+		sys.exit()
 
 
 def getHash(thefile):
@@ -100,7 +118,7 @@ if sys.argv[1] == "import":
 			continue
 		else:
 			os.system("cp "+fullpath+" "+DUMBDBDIR+month+str(dateAndTime.year)+'/'+newName)
-#			os.system("mv "+fullpath+" "+DUMBDBDIR+"../inbox/imported/"+newName)
+			os.system("mv "+fullpath+" "+DUMBDBDIR+"../inbox/imported/"+newName)
 	
 		#Add entry to table
 		with open(DUMBDBTABLE, 'a') as table:
