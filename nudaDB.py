@@ -1,8 +1,8 @@
 #!/usr/bin/python
-#dumbDB
+#nudaDB
 
 #TO-DO
-#DONE	make path saved in table relative to directory holding dumbDB.py, to allow use on removable memory
+#DONE	make path saved in table relative to directory holding nudaDB.py, to allow use on removable memory
 #DONE	use file timestamp if no EXIF data
 #DONE	for import, display image on screen and then prompt for tags
 #DONE	for import, keep focus on terminal, autoclose displayed image after tags are entered
@@ -10,12 +10,13 @@
 #	check entire db for duplicate files on import?
 #	ability to search db and display images and edit tags
 #	implement optparse
-#	add command line option to keep file in original location upon successful import
+#	add command line option to keep file in inbox upon successful import
 #DONE	allow wildcards on command line
 #DONE	save previously entered tag-string history, accessible with up arrow (importing readline makes raw_input do this automatically)
-#	change name to nudusDB/nudaDB/nudumDB. ('nudus' is latin for simple/unadorned/bare)
+#DONE	change name to nudusDB/nudaDB/nudumDB. ('nudus' is latin for simple/unadorned/bare)
 #DONE	make it 'standalone' executable
-#	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
+#DONE	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
+#	write README
 
 import hashlib
 import sys, os
@@ -26,27 +27,12 @@ from pyautogui import hotkey
 import time
 import readline
 
-#DUMBDBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/dumbDBDir/'		#this gets the directory of the python script
-DUMBDBDIR = os.getcwd() + '/dumbDBDir/'							#this gets the current working directory
-print DUMBDBDIR
-#DUMBDBTABLE = os.path.dirname(os.path.abspath(sys.argv[0])) + '/dumbDBTable.txt'
-DUMBDBTABLE = os.getcwd() + '/dumbDBTable.txt'
+#NUDADBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBDir/'		#this gets the directory of the python script
+NUDADBDIR = os.getcwd() + '/nudaDBDir/'							#this gets the current working directory
+print NUDADBDIR
+#NUDADBTABLE = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBTable.txt'
+NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-
-
-if sys.argv[1] == "install":
-	print 
-	os.system("mkdir ./dumbDBDir/")
-	os.system("mkdir ./inbox/")
-	os.system("mkdir ./inbox/imported/")
-	os.system("sudo ln -s ./dumbDB.py /bin/nudus")
-
-else:
-	if os.path.exists(DUMBDBDIR) and os.path.exists(DUMBDBTABLE):
-		print "Ready, Go!"
-	else:
-		print "Current directory, "+os.getcwd+", is not an installed DumbDB home directory."
-		sys.exit()
 
 
 def getHash(thefile):
@@ -62,6 +48,30 @@ def getHash(thefile):
 
 
 print sys.argv
+
+if sys.argv[1] == "install":
+	print "Installing nudaDB into "+os.getcwd()
+	os.system("mkdir ./nudaDBDir/")
+	os.system("mkdir ./inbox/")
+	os.system("mkdir ./inbox/imported/")
+	if not os.path.exists(NUDADBTABLE):
+		print "Creating "+NUDADBTABLE
+		with open(NUDADBTABLE, 'w') as table:
+			table.write("#filename\tpath\tdate\ttime\ttags")
+	if len(sys.argv) > 2:
+		if sys.argv[2] == "-f":
+			print "Forcing"
+			os.system("sudo ln -sf "+os.getcwd()+"/nudaDB.py /bin/nuda")
+		else:
+			os.system("sudo ln -s "+os.getcwd()+"/nudaDB.py /bin/nuda")
+
+else:
+	if os.path.exists(NUDADBDIR) and os.path.exists(NUDADBTABLE):
+		print "Ready, Go!"
+	else:
+		print "Current directory, "+os.getcwd+", is not an installed DumbDB home directory."
+		sys.exit()
+
 
 
 if sys.argv[1] == "import":
@@ -100,9 +110,9 @@ if sys.argv[1] == "import":
 		print tags
 	
 		#check for existing month directory, create if not exists
-		dirContents = os.listdir(DUMBDBDIR)
+		dirContents = os.listdir(NUDADBDIR)
 		print dirContents
-		dirCheck = DUMBDBDIR+month+str(dateAndTime.year)
+		dirCheck = NUDADBDIR+month+str(dateAndTime.year)
 		if month+str(dateAndTime.year) in dirContents:
 			print dirCheck+'/'+"  exists!"
 		else:
@@ -110,16 +120,16 @@ if sys.argv[1] == "import":
 			os.system("mkdir "+dirCheck)
 	
 		#copy file     filename = last six characters of hashstring
-		monthContents = os.listdir(DUMBDBDIR+month+str(dateAndTime.year))
+		monthContents = os.listdir(NUDADBDIR+month+str(dateAndTime.year))
 		fullHash = getHash(fullpath)
 		newName = fullHash[-6:]+'.'+extension
 		if newName in monthContents:
 			print "COLLISION!     Skipping..."
 			continue
 		else:
-			os.system("cp "+fullpath+" "+DUMBDBDIR+month+str(dateAndTime.year)+'/'+newName)
-			os.system("mv "+fullpath+" "+DUMBDBDIR+"../inbox/imported/"+newName)
+			os.system("cp "+fullpath+" "+NUDADBDIR+month+str(dateAndTime.year)+'/'+newName)
+			os.system("mv "+fullpath+" "+NUDADBDIR+"../inbox/imported/"+newName)
 	
 		#Add entry to table
-		with open(DUMBDBTABLE, 'a') as table:
-			table.write(newName+'\t'+'./dumbDBDir/'+month+str(dateAndTime.year)+'/'+'\t'+dateAndTime.strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
+		with open(NUDADBTABLE, 'a') as table:
+			table.write(newName+'\t'+'./nudaDBDir/'+month+str(dateAndTime.year)+'/'+'\t'+dateAndTime.strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
