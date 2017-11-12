@@ -13,6 +13,8 @@
 #DONE	allow wildcards on command line
 #	save previously entered tag-string history, accessible with up arrow (I think this requires a GUI...)
 #	change name to nudusDB/nudaDB/nudumDB. ('nudus' is latin for simple/unadorned/bare)
+#	make it 'standalone' executable
+#	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
 
 import hashlib
 import sys, os
@@ -95,6 +97,7 @@ if sys.argv[1] == "import":
 			continue
 		else:
 			os.system("cp "+fullpath+" "+DUMBDBDIR+month+str(dateAndTime.year)+'/'+newName)
+			os.system("mv "+fullpath+" "+DUMBDBDIR+"../inbox/imported/"+newName)
 	
 		#Add entry to table
 		with open(DUMBDBTABLE, 'a') as table:
