@@ -50,6 +50,16 @@ def getHash(thefile):
 
 print sys.argv
 
+if sys.argv[1] == "init":
+	print "Initializing nudaDB into "+os.getcwd()
+	os.system("mkdir ./nudaDBDir/")
+	os.system("mkdir ./inbox/")
+	os.system("mkdir ./inbox/imported/")
+	if not os.path.exists(NUDADBTABLE):
+		print "Creating "+NUDADBTABLE
+		with open(NUDADBTABLE, 'w') as table:
+			table.write("#filename\tpath\tdate\ttime\ttags")
+
 if sys.argv[1] == "install":
 	print "Installing nudaDB into "+os.getcwd()
 	os.system("mkdir ./nudaDBDir/")
@@ -68,9 +78,9 @@ if sys.argv[1] == "install":
 
 else:
 	if os.path.exists(NUDADBDIR) and os.path.exists(NUDADBTABLE):
-		print "Ready, Go!"
+		pass
 	else:
-		print "Current directory, "+os.getcwd+", is not an installed DumbDB home directory."
+		print "Current directory, "+os.getcwd+", is not initialized as a nudaDB home directory."
 		sys.exit()
 
 
