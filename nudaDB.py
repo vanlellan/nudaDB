@@ -17,6 +17,7 @@
 #DONE	make it 'standalone' executable
 #DONE	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
 #	write README
+#	implement tag dictionary for searching
 
 import hashlib
 import sys, os
@@ -73,6 +74,20 @@ else:
 		sys.exit()
 
 
+if sys.argv[1] == "tags":
+	tagDict = {}
+	with open(NUDADBTABLE, 'r') as table:
+		for line in table:
+			if line[0] == '#':
+				continue
+			else:
+				fname, path, date, time, tags = line.split('\t')
+				tagList = tags.rstrip().split(',')
+				print fname, tagList
+				for tag in tagList:
+					tagDict.setdefault(tag, []).append(fname)
+	print tagDict
+
 
 if sys.argv[1] == "import":
 	for infile in sys.argv[2:]:
@@ -127,9 +142,12 @@ if sys.argv[1] == "import":
 			print "COLLISION!     Skipping..."
 			continue
 		else:
-			os.system("cp "+fullpath+" "+NUDADBDIR+month+str(dateAndTime.year)+'/'+newName)
-			os.system("mv "+fullpath+" "+NUDADBDIR+"../inbox/imported/"+newName)
-	
-		#Add entry to table
-		with open(NUDADBTABLE, 'a') as table:
-			table.write(newName+'\t'+'./nudaDBDir/'+month+str(dateAndTime.year)+'/'+'\t'+dateAndTime.strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
+			try:
+				os.system("cp "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+month+str(dateAndTime.year)+'/'+newName)
+				os.system("mv "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/"+newName)
+			except:
+				print "copy/move problem!"
+				continue
+			#Add entry to table
+			with open(NUDADBTABLE, 'a') as table:
+				table.write(newName+'\t'+'./nudaDBDir/'+month+str(dateAndTime.year)+'/'+'\t'+dateAndTime.strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
