@@ -18,6 +18,7 @@
 #DONE	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
 #	write README
 #	implement tag dictionary for searching
+#	test ability to gracefully abort importing
 
 import hashlib
 import sys, os
