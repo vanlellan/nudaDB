@@ -20,7 +20,7 @@
 #	implement tag dictionary for searching
 #DONE	test ability to gracefully abort importing
 #DONE	move collision checking and skip before prompt for tags
-
+#	save a thumbnail of each imported image for less RAM-intensive browsing?
 
 import hashlib
 import sys, os
@@ -172,10 +172,12 @@ if sys.argv[1] == "import":
 			print tags
 			try:
 				os.system("cp "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+month+str(dateAndTime.year)+'/'+newName)
-				os.system("mv "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/"+newName)
 			except:
-				print "copy/move problem!"
+				print "copy problem!"
 				continue
 			#Add entry to table
 			with open(NUDADBTABLE, 'a') as table:
 				table.write(newName+'\t'+'./nudaDBDir/'+month+str(dateAndTime.year)+'/'+'\t'+dateAndTime.strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
+			#if using default import, move file from ./inbox/ to ./inbox/imported/
+			if len(sys.argv) == 2:
+				os.system("mv "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/"+newName)
