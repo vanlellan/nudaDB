@@ -18,7 +18,9 @@
 #DONE	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
 #	write README
 #	implement tag dictionary for searching
-#	test ability to gracefully abort importing
+#DONE	test ability to gracefully abort importing
+#DONE	move collision checking and skip before prompt for tags
+
 
 import hashlib
 import sys, os
@@ -56,6 +58,7 @@ if sys.argv[1] == "init":
 	os.system("mkdir ./nudaDBDir/")
 	os.system("mkdir ./inbox/")
 	os.system("mkdir ./inbox/imported/")
+	os.system("mkdir ./inbox/skipped/")
 	if not os.path.exists(NUDADBTABLE):
 		print "Creating "+NUDADBTABLE
 		with open(NUDADBTABLE, 'w') as table:
@@ -66,6 +69,7 @@ if sys.argv[1] == "install":
 	os.system("mkdir ./nudaDBDir/")
 	os.system("mkdir ./inbox/")
 	os.system("mkdir ./inbox/imported/")
+	os.system("mkdir ./inbox/skipped/")
 	if not os.path.exists(NUDADBTABLE):
 		print "Creating "+NUDADBTABLE
 		with open(NUDADBTABLE, 'w') as table:
@@ -101,7 +105,13 @@ if sys.argv[1] == "tags":
 
 
 if sys.argv[1] == "import":
-	for infile in sys.argv[2:]:
+	print "len(sys.argv)", len(sys.argv)
+	if len(sys.argv) == 2:
+		inFileNames = ['./inbox/'+f for f in os.listdir(os.getcwd()+'/inbox/') if os.path.isfile(os.getcwd()+'/inbox/'+f)]
+	else:
+		inFileName = sys.argv[2:]
+	print inFileNames
+	for infile in inFileNames:
 		#Get file data
 		fullpath = os.path.abspath(infile)
 		print fullpath
@@ -121,20 +131,11 @@ if sys.argv[1] == "import":
 			except:	
 				print "No file timestamp!?"
 				sys.exit()
-		image.thumbnail((800,800))
-		image.save("./temp.JPG","JPEG")
-		p = subprocess.Popen(["display","./temp.JPG"])
-		time.sleep(0.1)#wait for display window to fully open
-		hotkey('alt','tab')#switch focus back to terminal
-		input_string = raw_input("Enter space-delimited tags: ")
-		p.kill()
+	
 		print dateAndTime
 		month = MONTHS[dateAndTime.month-1]
 		print month
-		taglist = input_string.split(' ')
-		tags = ','.join(taglist)
-		print tags
-	
+
 		#check for existing month directory, create if not exists
 		dirContents = os.listdir(NUDADBDIR)
 		print dirContents
@@ -151,8 +152,24 @@ if sys.argv[1] == "import":
 		newName = fullHash[-6:]+'.'+extension
 		if newName in monthContents:
 			print "COLLISION!     Skipping..."
+			os.system("mv "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/"+newName)
 			continue
 		else:
+			image.thumbnail((800,800))
+			image.save("./temp.JPG","JPEG")
+			p = subprocess.Popen(["display","./temp.JPG"])
+			time.sleep(0.2)#wait for display window to fully open
+			hotkey('alt','tab')#switch focus back to terminal
+			try:
+				input_string = raw_input("Enter space-delimited tags: ")
+				p.kill()
+			except KeyboardInterrupt:
+				print "\nAborting import..."
+				p.kill()
+				sys.exit()
+			taglist = input_string.split(' ')
+			tags = ','.join(taglist)
+			print tags
 			try:
 				os.system("cp "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+month+str(dateAndTime.year)+'/'+newName)
 				os.system("mv "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/"+newName)
