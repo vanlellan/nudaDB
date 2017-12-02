@@ -30,6 +30,7 @@ import datetime
 from pyautogui import hotkey
 import time
 import readline
+import pickle
 
 #NUDADBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBDir/'		#this gets the directory of the python script
 NUDADBDIR = os.getcwd() + '/nudaDBDir/'							#this gets the current working directory
@@ -57,6 +58,7 @@ if sys.argv[1] == "init":
 	print "Initializing nudaDB into "+os.getcwd()
 	os.system("mkdir ./nudaDBDir/")
 	os.system("mkdir ./inbox/")
+	os.system("mkdir ./search/")
 	os.system("mkdir ./inbox/imported/")
 	os.system("mkdir ./inbox/skipped/")
 	if not os.path.exists(NUDADBTABLE):
@@ -68,6 +70,7 @@ if sys.argv[1] == "install":
 	print "Installing nudaDB into "+os.getcwd()
 	os.system("mkdir ./nudaDBDir/")
 	os.system("mkdir ./inbox/")
+	os.system("mkdir ./search/")
 	os.system("mkdir ./inbox/imported/")
 	os.system("mkdir ./inbox/skipped/")
 	if not os.path.exists(NUDADBTABLE):
@@ -100,9 +103,18 @@ if sys.argv[1] == "tags":
 				tagList = tags.rstrip().split(',')
 				print fname, tagList
 				for tag in tagList:
-					tagDict.setdefault(tag, []).append(fname)
+					tagDict.setdefault(tag, []).append(path+fname)
 	print tagDict
+	with open("tags.pickle","wb") as pickleFile:
+		pickle.dump(tagDict, pickleFile, protocol=pickle.HIGHEST_PROTOCOL)
 
+if sys.argv[1] == "search":
+	with open("tags.pickle","rb") as pickleFile:
+		tagDict = pickle.load(pickleFile)
+	print tagDict[sys.argv[2]]
+	os.system("rm "+NUDADBDIR+"../search/*")
+	for result in tagDict[sys.argv[2]]:
+		os.system("ln -s "+NUDADBDIR+"../"+result+" "+NUDADBDIR+"../search/"+result.split('/')[-1])
 
 if sys.argv[1] == "import":
 	print "len(sys.argv)", len(sys.argv)
