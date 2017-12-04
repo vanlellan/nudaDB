@@ -17,10 +17,13 @@
 #DONE	make it 'standalone' executable
 #DONE	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
 #	write README
-#	implement tag dictionary for searching
+#DONE	implement tag dictionary for searching
 #DONE	test ability to gracefully abort importing
 #DONE	move collision checking and skip before prompt for tags
 #	save a thumbnail of each imported image for less RAM-intensive browsing?
+#	python3 compatibility
+#	windows compatibility
+#	OSX compatibility
 
 import hashlib
 import sys, os
@@ -29,12 +32,12 @@ import subprocess
 import datetime
 from pyautogui import hotkey
 import time
-import readline
+import readline		#modifies behavior of raw_input
 import pickle
 
 #NUDADBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBDir/'		#this gets the directory of the python script
 NUDADBDIR = os.getcwd() + '/nudaDBDir/'							#this gets the current working directory
-print NUDADBDIR
+#print NUDADBDIR
 #NUDADBTABLE = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBTable.txt'
 NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -52,7 +55,7 @@ def getHash(thefile):
 	return hasher.hexdigest()
 
 
-print sys.argv
+#print sys.argv
 
 if sys.argv[1] == "init":
 	print "Initializing nudaDB into "+os.getcwd()
@@ -111,10 +114,25 @@ if sys.argv[1] == "tags":
 if sys.argv[1] == "search":
 	with open("tags.pickle","rb") as pickleFile:
 		tagDict = pickle.load(pickleFile)
-	print tagDict[sys.argv[2]]
+#	print tagDict[sys.argv[2]]
 	os.system("rm "+NUDADBDIR+"../search/*")
 	for result in tagDict[sys.argv[2]]:
-		os.system("ln -s "+NUDADBDIR+"../"+result+" "+NUDADBDIR+"../search/"+result.split('/')[-1])
+		filename = result.split('/')[-1]
+		os.system("ln -s "+NUDADBDIR+"../"+result+" "+NUDADBDIR+"../search/"+filename)
+		with open(NUDADBTABLE, 'r') as dbfile:
+			for line in dbfile:
+				if line[:len(filename)] == filename:
+					print line.rstrip()
+if sys.argv[1] == "edit":
+	readline.set_startup_hook(lambda: readline.insert_text("poop"))
+	try:
+		input_string = raw_input("Enter space-delimited tags: ")
+		print "input string = ", input_string
+	finally:
+		print "test done!"
+	#display image
+	#load existing tag string into input memory
+	#save edited tag string to Table
 
 if sys.argv[1] == "import":
 	print "len(sys.argv)", len(sys.argv)
