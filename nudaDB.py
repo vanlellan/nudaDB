@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#nudaDB, a simple ascii database for organizing images
+#nudaDB: a minimal, command-line managed, ascii database for organizing pictures with dates and tags
 #Copyright 2017 Randall Evan McClellan
 
 #This file is part of nudaDB.
