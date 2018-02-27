@@ -1,5 +1,21 @@
-#!/usr/bin/python
-#nudaDB
+#!/usr/bin/python3
+#nudaDB, a simple ascii database for organizing images
+#Copyright 2017 Randall Evan McClellan
+
+#This file is part of nudaDB.
+#
+#    nudaDB is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    nudaDB is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with nudaDB.  If not, see <http://www.gnu.org/licenses/>.
 
 #TO-DO
 #DONE	make path saved in table relative to directory holding nudaDB.py, to allow use on removable memory
@@ -24,6 +40,7 @@
 #	python3 compatibility
 #	windows compatibility
 #	OSX compatibility
+#	make search succeed on partial matches
 
 import hashlib
 import sys, os
@@ -51,38 +68,38 @@ def getHash(thefile):
 		while len(buf) > 0:
 			hasher.update(buf)
 			buf = afile.read(BLOCKSIZE)
-		print hasher.hexdigest()
+		print(hasher.hexdigest())
 	return hasher.hexdigest()
 
 
 #print sys.argv
 
 if sys.argv[1] == "init":
-	print "Initializing nudaDB into "+os.getcwd()
+	print("Initializing nudaDB into "+os.getcwd())
 	os.system("mkdir ./nudaDBDir/")
 	os.system("mkdir ./inbox/")
 	os.system("mkdir ./search/")
 	os.system("mkdir ./inbox/imported/")
 	os.system("mkdir ./inbox/skipped/")
 	if not os.path.exists(NUDADBTABLE):
-		print "Creating "+NUDADBTABLE
+		print("Creating "+NUDADBTABLE)
 		with open(NUDADBTABLE, 'w') as table:
 			table.write("#filename\tpath\tdate\ttime\ttags")
 
 if sys.argv[1] == "install":
-	print "Installing nudaDB into "+os.getcwd()
+	print("Installing nudaDB into "+os.getcwd())
 	os.system("mkdir ./nudaDBDir/")
 	os.system("mkdir ./inbox/")
 	os.system("mkdir ./search/")
 	os.system("mkdir ./inbox/imported/")
 	os.system("mkdir ./inbox/skipped/")
 	if not os.path.exists(NUDADBTABLE):
-		print "Creating "+NUDADBTABLE
+		print("Creating "+NUDADBTABLE)
 		with open(NUDADBTABLE, 'w') as table:
 			table.write("#filename\tpath\tdate\ttime\ttags")
 	if len(sys.argv) > 2:
 		if sys.argv[2] == "-f":
-			print "Forcing"
+			print("Forcing")
 			os.system("sudo ln -sf "+os.getcwd()+"/nudaDB.py /bin/nuda")
 		else:
 			os.system("sudo ln -s "+os.getcwd()+"/nudaDB.py /bin/nuda")
@@ -91,7 +108,7 @@ else:
 	if os.path.exists(NUDADBDIR) and os.path.exists(NUDADBTABLE):
 		pass
 	else:
-		print "Current directory, "+os.getcwd+", is not initialized as a nudaDB home directory."
+		print("Current directory, "+os.getcwd+", is not initialized as a nudaDB home directory.")
 		sys.exit()
 
 
@@ -104,10 +121,10 @@ if sys.argv[1] == "tags":
 			else:
 				fname, path, date, time, tags = line.split('\t')
 				tagList = tags.rstrip().split(',')
-				print fname, tagList
+				print(fname, tagList)
 				for tag in tagList:
 					tagDict.setdefault(tag, []).append(path+fname)
-	print tagDict
+	print(tagDict)
 	with open("tags.pickle","wb") as pickleFile:
 		pickle.dump(tagDict, pickleFile, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -122,58 +139,58 @@ if sys.argv[1] == "search":
 		with open(NUDADBTABLE, 'r') as dbfile:
 			for line in dbfile:
 				if line[:len(filename)] == filename:
-					print line.rstrip()
+					print(line.rstrip())
 if sys.argv[1] == "edit":
 	readline.set_startup_hook(lambda: readline.insert_text("poop"))
 	try:
-		input_string = raw_input("Enter space-delimited tags: ")
-		print "input string = ", input_string
+		input_string = input("Enter space-delimited tags: ")
+		print("input string = ", input_string)
 	finally:
-		print "test done!"
+		print("test done!")
 	#display image
 	#load existing tag string into input memory
 	#save edited tag string to Table
 
 if sys.argv[1] == "import":
-	print "len(sys.argv)", len(sys.argv)
+	print("len(sys.argv)", len(sys.argv))
 	if len(sys.argv) == 2:
 		inFileNames = ['./inbox/'+f for f in os.listdir(os.getcwd()+'/inbox/') if os.path.isfile(os.getcwd()+'/inbox/'+f)]
 	else:
 		inFileName = sys.argv[2:]
-	print inFileNames
+	print(inFileNames)
 	for infile in inFileNames:
 		#Get file data
 		fullpath = os.path.abspath(infile)
-		print fullpath
+		print(fullpath)
 		filename = fullpath.split('/')[-1]
-		print filename
+		print(filename)
 		extension = filename.split('.')[-1]
-		print extension
+		print(extension)
 		dirpath = fullpath[:-len(filename)]
-		print dirpath
+		print(dirpath)
 		image = Image.open(fullpath)
 		try:
 			dateAndTime = datetime.datetime.strptime(image._getexif()[36867], "%Y:%m:%d %H:%M:%S")
 		except:
-			print "No EXIF data found!"
+			print("No EXIF data found!")
 			try:
 				dateAndTime = datetime.datetime.fromtimestamp(os.path.getmtime(fullpath))
 			except:	
-				print "No file timestamp!?"
+				print("No file timestamp!?")
 				sys.exit()
 	
-		print dateAndTime
+		print(dateAndTime)
 		month = MONTHS[dateAndTime.month-1]
-		print month
+		print(month)
 
 		#check for existing month directory, create if not exists
 		dirContents = os.listdir(NUDADBDIR)
-		print dirContents
+		print(dirContents)
 		dirCheck = NUDADBDIR+month+str(dateAndTime.year)
 		if month+str(dateAndTime.year) in dirContents:
-			print dirCheck+'/'+"  exists!"
+			print(dirCheck+'/'+"  exists!")
 		else:
-			print "Creating "+dirCheck
+			print("Creating "+dirCheck)
 			os.system("mkdir "+dirCheck)
 	
 		#copy file     filename = last six characters of hashstring
@@ -181,7 +198,7 @@ if sys.argv[1] == "import":
 		fullHash = getHash(fullpath)
 		newName = fullHash[-6:]+'.'+extension
 		if newName in monthContents:
-			print "COLLISION!     Skipping..."
+			print("COLLISION!     Skipping...")
 			os.system("mv "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/"+newName)
 			continue
 		else:
@@ -191,19 +208,19 @@ if sys.argv[1] == "import":
 			time.sleep(0.2)#wait for display window to fully open
 			hotkey('alt','tab')#switch focus back to terminal
 			try:
-				input_string = raw_input("Enter space-delimited tags: ")
+				input_string = input("Enter space-delimited tags: ")
 				p.kill()
 			except KeyboardInterrupt:
-				print "\nAborting import..."
+				print("\nAborting import...")
 				p.kill()
 				sys.exit()
 			taglist = input_string.split(' ')
 			tags = ','.join(taglist)
-			print tags
+			print(tags)
 			try:
 				os.system("cp "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+month+str(dateAndTime.year)+'/'+newName)
 			except:
-				print "copy problem!"
+				print("copy problem!")
 				continue
 			#Add entry to table
 			with open(NUDADBTABLE, 'a') as table:
