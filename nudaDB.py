@@ -45,6 +45,8 @@
 import hashlib
 import sys, os
 from PIL import Image
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 import subprocess
 import datetime
 from pyautogui import hotkey
@@ -108,7 +110,7 @@ else:
 	if os.path.exists(NUDADBDIR) and os.path.exists(NUDADBTABLE):
 		pass
 	else:
-		print("Current directory, "+os.getcwd+", is not initialized as a nudaDB home directory.")
+		print("Current directory, "+os.getcwd()+", is not initialized as a nudaDB home directory.")
 		sys.exit()
 
 
