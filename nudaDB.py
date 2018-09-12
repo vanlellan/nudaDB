@@ -17,31 +17,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with nudaDB.  If not, see <http://www.gnu.org/licenses/>.
 
-#TO-DO
-#DONE	make path saved in table relative to directory holding nudaDB.py, to allow use on removable memory
-#DONE	use file timestamp if no EXIF data
-#DONE	for import, display image on screen and then prompt for tags
-#DONE	for import, keep focus on terminal, autoclose displayed image after tags are entered
-#	for import, suggest tags (autofill suggestions from previously used tags)
-#	check entire db for duplicate files on import?
-#	ability to search db and display images and edit tags
-#	implement optparse
-#	add command line option to keep file in inbox upon successful import
-#DONE	allow wildcards on command line
-#DONE	save previously entered tag-string history, accessible with up arrow (importing readline makes raw_input do this automatically)
-#DONE	change name to nudusDB/nudaDB/nudumDB. ('nudus' is latin for simple/unadorned/bare)
-#DONE	make it 'standalone' executable
-#DONE	make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
-#	write README
-#DONE	implement tag dictionary for searching
-#DONE	test ability to gracefully abort importing
-#DONE	move collision checking and skip before prompt for tags
-#	save a thumbnail of each imported image for less RAM-intensive browsing?
-#	python3 compatibility
-#	windows compatibility
-#	OSX compatibility
-#	make search succeed on partial matches
-
 import hashlib
 import sys, os
 from PIL import Image
