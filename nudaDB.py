@@ -19,14 +19,14 @@
 
 import hashlib
 import sys, os
-from PIL import Image
-from PIL import ImageFile
+import tkinter as tk
+from PIL import Image, ImageFile, ImageTk
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-import subprocess
+#import subprocess
 import datetime
-from pyautogui import hotkey
+#from pyautogui import hotkey
 import time
-import readline		#modifies behavior of raw_input
+#import readline		#modifies behavior of raw_input
 import pickle
 
 #NUDADBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBDir/'		#this gets the directory of the python script
@@ -36,6 +36,7 @@ NUDADBDIR = os.getcwd() + '/nudaDBDir/'							#this gets the current working dir
 NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+input_string = ''
 
 def getHash(thefile):
 	BLOCKSIZE = 65536
@@ -48,6 +49,14 @@ def getHash(thefile):
 		print(hasher.hexdigest())
 	return hasher.hexdigest()
 
+def send_text(event):
+	newText = textbox.get()
+	if newText in ['\\quit', '\\exit', '\\abort']:
+		popup.destroy()
+	else:
+		global input_string 
+		input_string = newText
+		popup.destroy()
 
 #print sys.argv
 
@@ -117,16 +126,33 @@ if sys.argv[1] == "search":
 			for line in dbfile:
 				if line[:len(filename)] == filename:
 					print(line.rstrip())
-if sys.argv[1] == "edit":
-	readline.set_startup_hook(lambda: readline.insert_text("poop"))
-	try:
-		input_string = input("Enter space-delimited tags: ")
-		print("input string = ", input_string)
-	finally:
-		print("test done!")
-	#display image
-	#load existing tag string into input memory
-	#save edited tag string to Table
+
+if sys.argv[1] == "reset":
+	yesorno = input("Really reset the entire DB? ")
+	if yesorno in ['yes', 'y', 'Y', 'Yes', 'YES']:
+		print("Moving all imported files back to ./inbox/")
+		os.system("mv ./nudaDBDir/*/*.* ./inbox/")
+		print("Wiping ./inbox/imported/")
+		os.system("rm ./inbox/imported/*")
+		print("Wiping nudaDBTable.txt")
+		os.system("rm "+NUDADBTABLE)
+		if not os.path.exists(NUDADBTABLE):
+			print("Creating "+NUDADBTABLE)
+			with open(NUDADBTABLE, 'w') as table:
+				table.write("#filename\tpath\tdate\ttime\ttags")
+		
+
+#if sys.argv[1] == "edit":
+#	readline.set_startup_hook(lambda: readline.insert_text("poop"))
+#	try:
+#		global input_string
+#		input_string = input("Enter space-delimited tags: ")
+#		print("input string = ", input_string)
+#	finally:
+#		print("test done!")
+#	#display image
+#	#load existing tag string into input memory
+#	#save edited tag string to Table
 
 if sys.argv[1] == "import":
 	print("len(sys.argv)", len(sys.argv))
@@ -181,19 +207,42 @@ if sys.argv[1] == "import":
 		else:
 			image.thumbnail((800,800))
 			image.save("./temp.JPG","JPEG")
-			p = subprocess.Popen(["display","./temp.JPG"])
-			time.sleep(0.2)#wait for display window to fully open
-			hotkey('alt','tab')#switch focus back to terminal
-			try:
-				input_string = input("Enter space-delimited tags: ")
-				p.kill()
-			except KeyboardInterrupt:
-				print("\nAborting import...")
-				p.kill()
-				sys.exit()
+
+			#initialize tk window
+			popup = tk.Tk()
+			popup.title("Enter space-delimited tags")
+			popup.geometry("800x900")
+			popup.configure(background='grey')
+
+			#set up tk window FIXME THIS ALL SHOULD GO IN A CLASS
+			img = ImageTk.PhotoImage(Image.open('./temp.JPG'))
+
+			impanel = tk.Label(popup, image = img)
+			impanel.pack(side='top', fill='both', expand='yes')
+
+			textbox = tk.Entry(popup)
+			textbox.focus()
+			textbox.bind("<Return>", send_text)
+			textbox.pack(side='bottom', fill='x', expand=True)
+			#global input_string 
+			input_string = ''
+
+			popup.mainloop()
+			print("input_string = ", input_string)
+
+		#	p = subprocess.Popen(["display","./temp.JPG"])
+		#	time.sleep(0.2)#wait for display window to fully open
+		#	hotkey('alt','tab')#switch focus back to terminal
+		#	try:
+		#		input_string = input("Enter space-delimited tags: ")
+		#		p.kill()
+		#	except KeyboardInterrupt:
+		#		print("\nAborting import...")
+		#		p.kill()
+		#		sys.exit()
 			taglist = input_string.split(' ')
 			tags = ','.join(taglist)
-			print(tags)
+			print('tags: ', tags)
 			try:
 				os.system("cp "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+month+str(dateAndTime.year)+'/'+newName)
 			except:
