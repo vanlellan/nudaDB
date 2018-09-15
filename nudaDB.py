@@ -49,6 +49,9 @@ def getHash(thefile):
 		print(hasher.hexdigest())
 	return hasher.hexdigest()
 
+def break_show(event):
+	slideshow.destroy()
+
 def send_text(event):
 	newText = textbox.get()
 	if newText in ['\\quit', '\\exit', '\\abort']:
@@ -117,15 +120,52 @@ if sys.argv[1] == "tags":
 if sys.argv[1] == "search":
 	with open("tags.pickle","rb") as pickleFile:
 		tagDict = pickle.load(pickleFile)
-#	print tagDict[sys.argv[2]]
+	print('Searching for tag: ',tagDict[sys.argv[2]])
 	os.system("rm "+NUDADBDIR+"../search/*")
 	for result in tagDict[sys.argv[2]]:
+		print("full path: ", result)
 		filename = result.split('/')[-1]
 		os.system("ln -s "+NUDADBDIR+"../"+result+" "+NUDADBDIR+"../search/"+filename)
 		with open(NUDADBTABLE, 'r') as dbfile:
 			for line in dbfile:
 				if line[:len(filename)] == filename:
 					print(line.rstrip())
+
+if sys.argv[1] == "slideshow":
+	with open("tags.pickle","rb") as pickleFile:
+		tagDict = pickle.load(pickleFile)
+		print('Starting slideshow with tag: ',sys.argv[2])
+		showlist = []
+		for result in tagDict[sys.argv[2]]:
+			showlist.append(result)
+
+	poop = Image.open(showlist[0])
+	try:
+		orientation = poop._getexif()[0x0112]
+	except:
+		print("EXIF problem!")
+		orientation = 0
+	rotations = {3: 180, 6: 270, 8: 90}
+	if orientation in rotations:
+		poop = poop.rotate(rotations[orientation], expand=1)
+	poop.thumbnail((800,800))
+	
+	#initialize tk window
+	slideshow = tk.Tk()
+	slideshow.title("Slide Show")
+	slideshow.geometry("800x800")
+	slideshow.configure(background='grey')
+
+	#set up tk window FIXME THIS ALL SHOULD GO IN A CLASS
+	img = ImageTk.PhotoImage(poop)
+
+	impanel = tk.Label(slideshow, image = img)
+	impanel.focus_set()
+	impanel.bind("<Escape>", break_show)
+	#impanel.bind("<Space>", show_next)
+	impanel.pack(side='top', fill='both', expand='yes')
+
+	slideshow.mainloop()
 
 if sys.argv[1] == "reset":
 	yesorno = input("Really reset the entire DB? ")
@@ -173,14 +213,22 @@ if sys.argv[1] == "import":
 		print(dirpath)
 		image = Image.open(fullpath)
 		try:
-			dateAndTime = datetime.datetime.strptime(image._getexif()[36867], "%Y:%m:%d %H:%M:%S")
+			fullexif=image._getexif()
+			dateAndTime = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
+			orientation = fullexif[0x0112]
 		except:
-			print("No EXIF data found!")
+			print("EXIF problem!")
+			orientation = 0
 			try:
 				dateAndTime = datetime.datetime.fromtimestamp(os.path.getmtime(fullpath))
 			except:	
 				print("No file timestamp!?")
 				sys.exit()
+
+		print('orientation = ',orientation)
+		rotations = {3: 180, 6: 270, 8: 90}
+		if orientation in rotations:
+			image = image.rotate(rotations[orientation], expand=1)
 	
 		print(dateAndTime)
 		month = MONTHS[dateAndTime.month-1]
