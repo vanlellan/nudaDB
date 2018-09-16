@@ -28,6 +28,7 @@ import datetime
 import time
 #import readline		#modifies behavior of raw_input
 import pickle
+import slideShowClass as ssc
 
 #NUDADBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBDir/'		#this gets the directory of the python script
 NUDADBDIR = os.getcwd() + '/nudaDBDir/'							#this gets the current working directory
@@ -36,7 +37,7 @@ NUDADBDIR = os.getcwd() + '/nudaDBDir/'							#this gets the current working dir
 NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
-input_string = ''
+input_strings = ['']
 
 def getHash(thefile):
 	BLOCKSIZE = 65536
@@ -57,11 +58,15 @@ def send_text(event):
 	if newText in ['\\quit', '\\exit', '\\abort']:
 		popup.destroy()
 	else:
-		global input_string 
-		input_string = newText
+		global input_strings 
+		input_strings[-1] = newText
 		popup.destroy()
 
-#print sys.argv
+def input_hist_backward(event):
+	pass
+
+def input_hist_forward(event):
+	pass
 
 if sys.argv[1] == "init":
 	print("Initializing nudaDB into "+os.getcwd())
@@ -139,32 +144,9 @@ if sys.argv[1] == "slideshow":
 		for result in tagDict[sys.argv[2]]:
 			showlist.append(result)
 
-	poop = Image.open(showlist[0])
-	try:
-		orientation = poop._getexif()[0x0112]
-	except:
-		print("EXIF problem!")
-		orientation = 0
-	rotations = {3: 180, 6: 270, 8: 90}
-	if orientation in rotations:
-		poop = poop.rotate(rotations[orientation], expand=1)
-	poop.thumbnail((800,800))
-	
 	#initialize tk window
 	slideshow = tk.Tk()
-	slideshow.title("Slide Show")
-	slideshow.geometry("800x800")
-	slideshow.configure(background='grey')
-
-	#set up tk window FIXME THIS ALL SHOULD GO IN A CLASS
-	img = ImageTk.PhotoImage(poop)
-
-	impanel = tk.Label(slideshow, image = img)
-	impanel.focus_set()
-	impanel.bind("<Escape>", break_show)
-	#impanel.bind("<Space>", show_next)
-	impanel.pack(side='top', fill='both', expand='yes')
-
+	my_slideshow = ssc.slideShowClass(slideshow, showlist)
 	slideshow.mainloop()
 
 if sys.argv[1] == "reset":
@@ -181,18 +163,6 @@ if sys.argv[1] == "reset":
 			with open(NUDADBTABLE, 'w') as table:
 				table.write("#filename\tpath\tdate\ttime\ttags")
 		
-
-#if sys.argv[1] == "edit":
-#	readline.set_startup_hook(lambda: readline.insert_text("poop"))
-#	try:
-#		global input_string
-#		input_string = input("Enter space-delimited tags: ")
-#		print("input string = ", input_string)
-#	finally:
-#		print("test done!")
-#	#display image
-#	#load existing tag string into input memory
-#	#save edited tag string to Table
 
 if sys.argv[1] == "import":
 	print("len(sys.argv)", len(sys.argv))
@@ -271,24 +241,15 @@ if sys.argv[1] == "import":
 			textbox = tk.Entry(popup)
 			textbox.focus()
 			textbox.bind("<Return>", send_text)
+			textbox.bind("<Up>", input_hist_backward)
+			textbox.bind("<Down>", input_hist_forward)
 			textbox.pack(side='bottom', fill='x', expand=True)
-			#global input_string 
-			input_string = ''
+			input_strings.append('')
 
 			popup.mainloop()
-			print("input_string = ", input_string)
+			print("input_string = ", input_strings[-1])
 
-		#	p = subprocess.Popen(["display","./temp.JPG"])
-		#	time.sleep(0.2)#wait for display window to fully open
-		#	hotkey('alt','tab')#switch focus back to terminal
-		#	try:
-		#		input_string = input("Enter space-delimited tags: ")
-		#		p.kill()
-		#	except KeyboardInterrupt:
-		#		print("\nAborting import...")
-		#		p.kill()
-		#		sys.exit()
-			taglist = input_string.split(' ')
+			taglist = input_strings[-1].split(' ')
 			tags = ','.join(taglist)
 			print('tags: ', tags)
 			try:

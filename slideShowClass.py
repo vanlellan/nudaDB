@@ -11,9 +11,11 @@ from PIL import Image, ImageFile, ImageTk
 class slideShowClass:
 	def __init__(self,master,listOfImagePaths):
 		self.master = master
+		self.listOfImagePaths = listOfImagePaths
+		self.afterID = None
 		self.currentIndex = 0
 		self.rotations = {3: 180, 6: 270, 8: 90}
-		self.currentImage = ImageTk.PhotoImage(makeThumb(listOfImagePaths[0]))
+		self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[0]))
 
 		master.title("Slide Show")
 		master.geometry("800x800")
@@ -22,19 +24,26 @@ class slideShowClass:
 		self.showpanel = tk.Label(master, image=self.currentImage)
 		self.showpanel.focus_set()
 		self.showpanel.bind("<Escape>", self.show_stop)
-		self.showpanel.bind("<Space>", self.show_next)
+		self.showpanel.bind("<space>", self.show_next)
 		self.showpanel.pack(fill='both', expand='yes')
+		self.afterID = self.master.after(2000,self.show_next)
 
-	def show_next(self, event):
+	def show_next(self, event=None):
+		if self.afterID is not None:
+			self.master.after_cancel(self.afterID)
+			self.afterID = None
 		self.currentIndex += 1
-		self.currentImage = ImageTk.PhotoImage(makeThumb(listOfImagePaths[self.currentIndex]))
+		if self.currentIndex >= len(self.listOfImagePaths):
+			self.currentIndex = 0
+		self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[self.currentIndex]))
 		self.showpanel.configure(image=self.currentImage)
 		self.showpanel.image = self.currentImage
+		self.afterID = self.master.after(2000,self.show_next)
 
 	def show_stop(self, event):
 		self.master.destroy()
 
-	def makeThumb(imagePath):
+	def makeThumb(self, imagePath):
 		thumb = Image.open(imagePath)
 		try:
 			orientation = thumb._getexif()[0x0112]
