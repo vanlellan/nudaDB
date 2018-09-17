@@ -44,11 +44,7 @@ def getHash(thefile):
 		while len(buf) > 0:
 			hasher.update(buf)
 			buf = afile.read(BLOCKSIZE)
-		print(hasher.hexdigest())
 	return hasher.hexdigest()
-
-def break_show(event):
-	slideshow.destroy()
 
 def send_text(event):
 	newText = textbox.get()
@@ -58,12 +54,6 @@ def send_text(event):
 		global input_strings 
 		input_strings[-1] = newText
 		popup.destroy()
-
-def input_hist_backward(event):
-	pass
-
-def input_hist_forward(event):
-	pass
 
 if sys.argv[1] == "init":
 	print("Initializing nudaDB into "+os.getcwd())
@@ -227,8 +217,6 @@ if sys.argv[1] == "import":
 			textbox = tk.Entry(popup)
 			textbox.focus()
 			textbox.bind("<Return>", send_text)
-			textbox.bind("<Up>", input_hist_backward)
-			textbox.bind("<Down>", input_hist_forward)
 			textbox.pack(side='bottom', fill='x', expand=True)
 			input_strings.append('')
 
