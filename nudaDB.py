@@ -115,7 +115,7 @@ if sys.argv[1] == "reset":
 		if not os.path.exists(ssc.NUDADBTABLE):
 			print("Creating "+ssc.NUDADBTABLE)
 			with open(ssc.NUDADBTABLE, 'w') as table:
-				table.write("#filename\tpath\tdate\ttime\ttags")
+				table.write("#filename\tpath\tdate\ttime\ttags\n")
 
 if sys.argv[1] == "import":
 	if len(sys.argv) == 2:
