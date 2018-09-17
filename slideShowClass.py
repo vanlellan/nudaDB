@@ -1,32 +1,153 @@
+#Copyright 2018 Randall Evan McClellan
 
+#This file is part of nudaDB.
+#
+#    nudaDB is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    nudaDB is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with nudaDB.  If not, see <http://www.gnu.org/licenses/>.
+
+import hashlib
 import tkinter as tk
 from PIL import Image, ImageFile, ImageTk
-
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+import os
+import datetime
 
 #TODO
 #	Make this class general enough to use for both import and slideshow
 	#for import, text input bar sets tags for the current image
 	#for slideshow, text input bar restarts slideshow with new search terms
 
+#NUDADBDIR = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBDir/'		#this gets the directory of the python script
+NUDADBDIR = os.getcwd() + '/nudaDBDir/'							#this gets the current working directory
+#print NUDADBDIR
+#NUDADBTABLE = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBTable.txt'
+NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
+MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
 class slideShowClass:
-	def __init__(self,master,listOfImagePaths):
+	def __init__(self,master,listOfImagePaths,showOrImport):
 		self.master = master
 		self.listOfImagePaths = listOfImagePaths
+		self.showOrImport = showOrImport
+		self.input_strings = []
 		self.afterID = None
-		self.currentIndex = 0
+		self.currentIndex = -1
 		self.rotations = {3: 180, 6: 270, 8: 90}
-		self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[0]))
+		#self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[0]))
+		self.currentImage = None
+		self.currentImageOriginal = None
 
 		master.title("Slide Show")
-		master.geometry("800x800")
+		master.geometry("800x850")
 		master.configure(background='black')
 
 		self.showpanel = tk.Label(master, image=self.currentImage)
-		self.showpanel.focus_set()
-		self.showpanel.bind("<Escape>", self.show_stop)
-		self.showpanel.bind("<space>", self.show_next)
 		self.showpanel.pack(fill='both', expand='yes')
-		self.afterID = self.master.after(2000,self.show_next)
+
+		self.textbox = tk.Entry(master)
+		self.textbox.focus()
+		if self.showOrImport == 'show':
+			self.textbox.bind("<Return>", self.new_search)
+			self.textbox.bind("<Next>", self.show_next)	#Page Down
+			#self.textbox.bind("<Prior>", self.show_prior)	#Page Up
+		elif self.showOrImport == 'import':
+			self.textbox.bind("<Return>", self.send_tags)
+		self.textbox.bind("<Escape>", self.show_stop)
+		self.textbox.pack(side='bottom', fill='x', expand=True)
+
+		if self.showOrImport == 'show':
+
+			self.show_next()
+		elif self.showOrImport == 'import':
+			if self.next_image():
+				self.tag_input()
+
+	def new_search(self, event=None):
+		pass
+
+	def getHash(self, thefile):
+		BLOCKSIZE = 65536
+		hasher = hashlib.md5()
+		with open(thefile, 'rb') as afile:
+			buf = afile.read(BLOCKSIZE)
+			while len(buf) > 0:
+				hasher.update(buf)
+				buf = afile.read(BLOCKSIZE)
+		return hasher.hexdigest()
+
+	def send_tags(self, event=None):
+		newTags = self.textbox.get()
+		if newTags in ['\\quit', '\\exit', '\\abort']:
+			self.master.quit()
+			return None
+		else:
+			self.input_strings.append(newTags)
+		taglist = self.input_strings[-1].split(' ')
+		tags = ','.join(taglist)
+		try:
+			os.system("cp "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+self.month+str(self.dateAndTime.year)+'/'+self.newName)
+			#Add entry to table
+			with open(NUDADBTABLE, 'a') as table:
+				table.write(self.newName+'\t'+'./nudaDBDir/'+self.month+str(self.dateAndTime.year)+'/'+'\t'+self.dateAndTime.strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
+			#if using default import, move file from ./inbox/ to ./inbox/imported/
+			if os.path.isfile('./inbox/'+self.filename):
+				os.system("mv "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/"+self.newName)
+		except:
+			print("copy problem!")
+		self.textbox.delete(0, tk.END)
+		if self.next_image():
+			self.tag_input()
+
+	def tag_input(self, event=None):
+		#Get file data
+		self.fullpath = os.path.abspath(self.listOfImagePaths[self.currentIndex])
+		self.filename = self.fullpath.split('/')[-1]
+		extension = self.filename.split('.')[-1]
+		self.dirpath = self.fullpath[:-len(self.filename)]
+		try:
+			fullexif=self.currentImageOriginal._getexif()
+			self.dateAndTime = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
+		except Exception as ex:
+			print(ex)
+			print("EXIF problem! Using file timestamp...")
+			try:
+				self.dateAndTime = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpath))
+			except Exception as ex:	
+				print(ex)
+				print("No file timestamp!? Crashing...")
+				self.master.quit()
+				return None
+	
+		self.month = MONTHS[self.dateAndTime.month-1]
+		#check for existing month directory, create if not exists
+		dirContents = os.listdir(NUDADBDIR)
+		dirCheck = NUDADBDIR+self.month+str(self.dateAndTime.year)
+		if self.month+str(self.dateAndTime.year) in dirContents:
+			pass
+			#print(dirCheck+'/'+"  exists!")
+		else:
+			print("Creating "+dirCheck)
+			os.system("mkdir "+dirCheck)
+	
+		#copy file     filename = last six characters of hashstring
+		monthContents = os.listdir(NUDADBDIR+self.month+str(self.dateAndTime.year))
+		fullHash = self.getHash(self.fullpath)
+		self.newName = fullHash[-6:]+'.'+extension
+		if self.newName in monthContents:
+			print("COLLISION!     Skipping...")
+			os.system("mv "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/"+self.newName)
+			if self.next_image():
+				self.tag_input()
 
 	def next_image(self, event=None):
 		if self.afterID is not None:
@@ -34,20 +155,30 @@ class slideShowClass:
 			self.afterID = None
 		self.currentIndex += 1
 		if self.currentIndex >= len(self.listOfImagePaths):
-			self.currentIndex = 0
+			if self.showOrImport == 'show':
+				self.currentIndex = 0
+			elif self.showOrImport == 'import':
+				self.master.quit()
+				return False
+			else:
+				print("Something has gone very wrong...")
+				self.master.quit()
+				return False
 		self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[self.currentIndex]))
 		self.showpanel.configure(image=self.currentImage)
 		self.showpanel.image = self.currentImage
+		return True
 
 	def show_next(self, event=None):
 		self.next_image(event)
 		self.afterID = self.master.after(2000,self.show_next)
 
 	def show_stop(self, event):
-		self.master.destroy()
+		self.master.quit()
 
 	def makeThumb(self, imagePath):
 		thumb = Image.open(imagePath)
+		self.currentImageOriginal = Image.open(imagePath)
 		try:
 			orientation = thumb._getexif()[0x0112]
 		except:
