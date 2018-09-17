@@ -22,11 +22,8 @@ import sys, os
 import tkinter as tk
 from PIL import Image, ImageFile, ImageTk
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-#import subprocess
 import datetime
-#from pyautogui import hotkey
 import time
-#import readline		#modifies behavior of raw_input
 import pickle
 import slideShowClass as ssc
 
@@ -162,25 +159,18 @@ if sys.argv[1] == "reset":
 			print("Creating "+NUDADBTABLE)
 			with open(NUDADBTABLE, 'w') as table:
 				table.write("#filename\tpath\tdate\ttime\ttags")
-		
 
 if sys.argv[1] == "import":
-	print("len(sys.argv)", len(sys.argv))
 	if len(sys.argv) == 2:
 		inFileNames = ['./inbox/'+f for f in os.listdir(os.getcwd()+'/inbox/') if os.path.isfile(os.getcwd()+'/inbox/'+f)]
 	else:
-		inFileName = sys.argv[2:]
-	print(inFileNames)
+		inFileNames = sys.argv[2:]
 	for infile in inFileNames:
 		#Get file data
 		fullpath = os.path.abspath(infile)
-		print(fullpath)
 		filename = fullpath.split('/')[-1]
-		print(filename)
 		extension = filename.split('.')[-1]
-		print(extension)
 		dirpath = fullpath[:-len(filename)]
-		print(dirpath)
 		image = Image.open(fullpath)
 		try:
 			fullexif=image._getexif()
@@ -195,21 +185,18 @@ if sys.argv[1] == "import":
 				print("No file timestamp!?")
 				sys.exit()
 
-		print('orientation = ',orientation)
 		rotations = {3: 180, 6: 270, 8: 90}
 		if orientation in rotations:
 			image = image.rotate(rotations[orientation], expand=1)
 	
-		print(dateAndTime)
 		month = MONTHS[dateAndTime.month-1]
-		print(month)
 
 		#check for existing month directory, create if not exists
 		dirContents = os.listdir(NUDADBDIR)
-		print(dirContents)
 		dirCheck = NUDADBDIR+month+str(dateAndTime.year)
 		if month+str(dateAndTime.year) in dirContents:
-			print(dirCheck+'/'+"  exists!")
+			pass
+			#print(dirCheck+'/'+"  exists!")
 		else:
 			print("Creating "+dirCheck)
 			os.system("mkdir "+dirCheck)
@@ -224,7 +211,6 @@ if sys.argv[1] == "import":
 			continue
 		else:
 			image.thumbnail((800,800))
-			image.save("./temp.JPG","JPEG")
 
 			#initialize tk window
 			popup = tk.Tk()
@@ -233,7 +219,7 @@ if sys.argv[1] == "import":
 			popup.configure(background='grey')
 
 			#set up tk window FIXME THIS ALL SHOULD GO IN A CLASS
-			img = ImageTk.PhotoImage(Image.open('./temp.JPG'))
+			img = ImageTk.PhotoImage(image)
 
 			impanel = tk.Label(popup, image = img)
 			impanel.pack(side='top', fill='both', expand='yes')
@@ -247,11 +233,9 @@ if sys.argv[1] == "import":
 			input_strings.append('')
 
 			popup.mainloop()
-			print("input_string = ", input_strings[-1])
 
 			taglist = input_strings[-1].split(' ')
 			tags = ','.join(taglist)
-			print('tags: ', tags)
 			try:
 				os.system("cp "+fullpath.replace(' ', "\ ")+" "+NUDADBDIR+month+str(dateAndTime.year)+'/'+newName)
 			except:

@@ -28,7 +28,7 @@ class slideShowClass:
 		self.showpanel.pack(fill='both', expand='yes')
 		self.afterID = self.master.after(2000,self.show_next)
 
-	def show_next(self, event=None):
+	def next_image(self, event=None):
 		if self.afterID is not None:
 			self.master.after_cancel(self.afterID)
 			self.afterID = None
@@ -38,6 +38,9 @@ class slideShowClass:
 		self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[self.currentIndex]))
 		self.showpanel.configure(image=self.currentImage)
 		self.showpanel.image = self.currentImage
+
+	def show_next(self, event=None):
+		self.next_image(event)
 		self.afterID = self.master.after(2000,self.show_next)
 
 	def show_stop(self, event):
