@@ -40,8 +40,9 @@ class slideShowClass:
 		self.listOfImagePaths = listOfImagePaths
 		self.showOrImport = showOrImport
 		self.input_strings = []
+		self.currentInputIndex = 0
 		self.afterID = None
-		self.currentIndex = -1
+		self.currentImageIndex = -1
 		self.rotations = {3: 180, 6: 270, 8: 90}
 		#self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[0]))
 		self.currentImage = None
@@ -62,6 +63,8 @@ class slideShowClass:
 			#self.textbox.bind("<Prior>", self.show_prior)	#Page Up
 		elif self.showOrImport == 'import':
 			self.textbox.bind("<Return>", self.send_tags)
+			self.textbox.bind("<Up>", self.input_hist_prev)
+			self.textbox.bind("<Down>", self.input_hist_next)
 		self.textbox.bind("<Escape>", self.show_stop)
 		self.textbox.pack(side='bottom', fill='x', expand=True)
 
@@ -85,7 +88,25 @@ class slideShowClass:
 				buf = afile.read(BLOCKSIZE)
 		return hasher.hexdigest()
 
+	def input_hist_prev(self, event=None):
+		self.currentInputIndex -= 1
+		if self.currentInputIndex >= -len(self.input_strings):
+			self.textbox.delete(0, tk.END)
+			self.textbox.insert(0, self.input_strings[self.currentInputIndex])
+		else:
+			self.currentInputIndex += 1
+
+	def input_hist_next(self, event=None):
+		self.currentInputIndex += 1
+		if self.currentInputIndex < 0:
+			self.textbox.delete(0, tk.END)
+			self.textbox.insert(0, self.input_strings[self.currentInputIndex])
+		else:
+			self.currentInputIndex = 0
+			self.textbox.delete(0, tk.END)
+
 	def send_tags(self, event=None):
+		self.currentInputIndex = 0
 		newTags = self.textbox.get()
 		if newTags in ['\\quit', '\\exit', '\\abort']:
 			self.master.quit()
@@ -110,7 +131,7 @@ class slideShowClass:
 
 	def tag_input(self, event=None):
 		#Get file data
-		self.fullpath = os.path.abspath(self.listOfImagePaths[self.currentIndex])
+		self.fullpath = os.path.abspath(self.listOfImagePaths[self.currentImageIndex])
 		self.filename = self.fullpath.split('/')[-1]
 		extension = self.filename.split('.')[-1]
 		self.dirpath = self.fullpath[:-len(self.filename)]
@@ -153,10 +174,10 @@ class slideShowClass:
 		if self.afterID is not None:
 			self.master.after_cancel(self.afterID)
 			self.afterID = None
-		self.currentIndex += 1
-		if self.currentIndex >= len(self.listOfImagePaths):
+		self.currentImageIndex += 1
+		if self.currentImageIndex >= len(self.listOfImagePaths):
 			if self.showOrImport == 'show':
-				self.currentIndex = 0
+				self.currentImageIndex = 0
 			elif self.showOrImport == 'import':
 				self.master.quit()
 				return False
@@ -164,7 +185,7 @@ class slideShowClass:
 				print("Something has gone very wrong...")
 				self.master.quit()
 				return False
-		self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[self.currentIndex]))
+		self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[self.currentImageIndex]))
 		self.showpanel.configure(image=self.currentImage)
 		self.showpanel.image = self.currentImage
 		return True
