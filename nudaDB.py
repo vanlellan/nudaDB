@@ -100,18 +100,24 @@ if sys.argv[1] == "slideshow":
 	slideshow.mainloop()
 
 if sys.argv[1] == "reset":
-	yesorno = input("Really reset the entire DB? ")
-	if yesorno in ['yes', 'y', 'Y', 'Yes', 'YES']:
-		print("Moving all imported files back to ./inbox/")
-		os.system("mv ./nudaDBDir/*/*.* ./inbox/")
-		print("Wiping ./inbox/imported/")
-		os.system("rm ./inbox/imported/*")
-		print("Wiping nudaDBTable.txt")
-		os.system("rm "+ssc.NUDADBTABLE)
-		if not os.path.exists(ssc.NUDADBTABLE):
-			print("Creating "+ssc.NUDADBTABLE)
-			with open(ssc.NUDADBTABLE, 'w') as table:
-				table.write("#filename\tpath\tdate\ttime\ttags\n")
+	try:
+		value = os.environ['ALLOWNUDARESET']
+	except:
+		print("nuda reset disabled!")
+		value = "False"
+	if value == 'True':
+		yesorno = input("Really reset the entire DB? ")
+		if yesorno in ['yes', 'y', 'Y', 'Yes', 'YES']:
+			print("Moving all imported files back to ./inbox/")
+			os.system("mv ./nudaDBDir/*/*.* ./inbox/")
+			print("Wiping ./inbox/imported/")
+			os.system("rm ./inbox/imported/*")
+			print("Wiping nudaDBTable.txt")
+			os.system("rm "+ssc.NUDADBTABLE)
+			if not os.path.exists(ssc.NUDADBTABLE):
+				print("Creating "+ssc.NUDADBTABLE)
+				with open(ssc.NUDADBTABLE, 'w') as table:
+					table.write("#filename\tpath\tdate\ttime\ttags\n")
 
 if sys.argv[1] == "import":
 	if len(sys.argv) == 2:
