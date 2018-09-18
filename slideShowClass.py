@@ -88,7 +88,14 @@ class slideShowClass:
 				self.tag_input()
 
 	def new_search(self, event=None):
-		pass
+		newTags = self.textbox.get()
+		self.input_strings.append(newTags)
+		taglist = self.input_strings[-1].split(' ')
+		self.listOfImagePaths = getImagesMatchingTags(taglist)
+		self.currentImageIndex = -1
+		self.show_next()
+		self.currentInputIndex = 0
+		self.textbox.delete(0, tk.END)
 
 	def getHash(self, thefile):
 		BLOCKSIZE = 65536
