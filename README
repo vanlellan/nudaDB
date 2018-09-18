@@ -27,7 +27,7 @@ TODO
 [ ] commandline option to specify a default tag string which will be preloaded on the Entry bar with each picture during import
 
 Ideas
-[ ] change name to 'fresco'
+[ ] change name to 'fresco' or 'oris' (Command Line Image Tagger) or 'rat' (Rapid Album Tagger)
 [ ] fill inbox from external media feature
 	-search computer for external media
 	-find 'DCIM' directories
