@@ -77,12 +77,11 @@ if sys.argv[1] == "tags":
 		pickle.dump(tagDict, pickleFile, protocol=pickle.HIGHEST_PROTOCOL)
 
 if sys.argv[1] == "search":
-	with open("tags.pickle","rb") as pickleFile:
-		tagDict = pickle.load(pickleFile)
-	print('Searching for tag: ',tagDict[sys.argv[2]])
+	tagList = sys.argv[2:]
+	print('Searching for tag: ',tagList)
+	imageList = ssc.getImagesMatchingTags(tagList)
 	os.system("rm "+ssc.NUDADBDIR+"../search/*")
-	for result in tagDict[sys.argv[2]]:
-		print("full path: ", result)
+	for result in imageList:
 		filename = result.split('/')[-1]
 		os.system("ln -s "+ssc.NUDADBDIR+"../"+result+" "+ssc.NUDADBDIR+"../search/"+filename)
 		with open(ssc.NUDADBTABLE, 'r') as dbfile:
@@ -91,16 +90,13 @@ if sys.argv[1] == "search":
 					print(line.rstrip())
 
 if sys.argv[1] == "slideshow":
-	with open("tags.pickle","rb") as pickleFile:
-		tagDict = pickle.load(pickleFile)
-		print('Starting slideshow with tag: ',sys.argv[2])
-		showlist = []
-		for result in tagDict[sys.argv[2]]:
-			showlist.append(result)
+	tagList = sys.argv[2:]
+	print('Starting slideshow with tags: ',tagList)
+	imageList = ssc.getImagesMatchingTags(tagList)
 
 	#initialize tk window
 	slideshow = tk.Tk()
-	my_slideshow = ssc.slideShowClass(slideshow, showlist, 'show')
+	my_slideshow = ssc.slideShowClass(slideshow, imageList, 'show')
 	slideshow.mainloop()
 
 if sys.argv[1] == "reset":

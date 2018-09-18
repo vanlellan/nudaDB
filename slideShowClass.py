@@ -21,6 +21,7 @@ from PIL import Image, ImageFile, ImageTk
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import os
 import datetime
+import pickle
 
 #TODO
 #	Make this class general enough to use for both import and slideshow
@@ -33,6 +34,15 @@ NUDADBDIR = os.getcwd() + '/nudaDBDir/'							#this gets the current working dir
 #NUDADBTABLE = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBTable.txt'
 NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+def getImagesMatchingTags(listOfTags):
+	with open("tags.pickle","rb") as pickleFile:
+		tagDict = pickle.load(pickleFile)
+	imagelist = []
+	for tag in listOfTags:
+		for result in tagDict[tag]:
+			imagelist.append(result)
+	return imagelist
 
 class slideShowClass:
 	def __init__(self,master,listOfImagePaths,showOrImport):
@@ -61,6 +71,8 @@ class slideShowClass:
 			self.textbox.bind("<Return>", self.new_search)
 			self.textbox.bind("<Next>", self.show_next)	#Page Down
 			#self.textbox.bind("<Prior>", self.show_prior)	#Page Up
+			self.textbox.bind("<Up>", self.input_hist_prev)
+			self.textbox.bind("<Down>", self.input_hist_next)
 		elif self.showOrImport == 'import':
 			self.textbox.bind("<Return>", self.send_tags)
 			self.textbox.bind("<Up>", self.input_hist_prev)

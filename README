@@ -24,7 +24,7 @@ TODO
 [ ] windows compatibility
 [ ] OSX compatibility
 [ ] make search succeed on partial matches
-
+[ ] commandline option to specify a default tag string which will be preloaded on the Entry bar with each picture during import
 
 Ideas
 [ ] change name to 'fresco'
