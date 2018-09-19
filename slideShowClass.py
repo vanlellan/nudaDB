@@ -57,10 +57,12 @@ class slideShowClass:
 		#self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[0]))
 		self.currentImage = None
 		self.currentImageOriginal = None
+		self.fullscreenState = True
 
 		master.title("Slide Show")
-		master.geometry("800x850")
+		master.geometry(str(round(0.9*master.winfo_screenwidth()))+'x'+str(round(0.9*master.winfo_screenheight())))
 		master.configure(background='black')
+		self.master.attributes("-fullscreen", self.fullscreenState)
 
 		self.showpanel = tk.Label(master, image=self.currentImage)
 		self.showpanel.pack(fill='both', expand='yes')
@@ -77,7 +79,9 @@ class slideShowClass:
 			self.textbox.bind("<Return>", self.send_tags)
 			self.textbox.bind("<Up>", self.input_hist_prev)
 			self.textbox.bind("<Down>", self.input_hist_next)
-		self.textbox.bind("<Escape>", self.show_stop)
+		self.textbox.bind("<Control-Key-w>", self.show_stop)
+		self.textbox.bind("<Escape>", self.fullscreen_off)
+		self.textbox.bind("<F11>", self.toggle_fullscreen)
 		self.textbox.pack(side='bottom', fill='x', expand=True)
 
 		if self.showOrImport == 'show':
@@ -86,6 +90,14 @@ class slideShowClass:
 		elif self.showOrImport == 'import':
 			if self.next_image():
 				self.tag_input()
+
+	def fullscreen_off(self, event=None):
+		self.fullscreenState = False
+		self.master.attributes("-fullscreen", False)
+
+	def toggle_fullscreen(self, event=None):
+		self.fullscreenState = not self.fullscreenState
+		self.master.attributes("-fullscreen", self.fullscreenState)
 
 	def new_search(self, event=None):
 		newTags = self.textbox.get()
@@ -226,7 +238,8 @@ class slideShowClass:
 			orientation = 0
 		if orientation in self.rotations:
 			thumb = thumb.rotate(self.rotations[orientation], expand=1)
-		thumb.thumbnail((800,800))
+		self.master.update_idletasks()
+		thumb.thumbnail((self.master.winfo_width(),self.master.winfo_height()-50))
 		return thumb
 		
 
