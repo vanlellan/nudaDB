@@ -27,11 +27,16 @@ TODO
 [ ] full regex implementation (optional)?
 [ ] config file (.nudarc) for specifying optional behaviors
 [ ] commandline option to specify a default tag string which will be preloaded on the Entry bar with each picture during import
-
+[ ] gracefully handle a file missing
+[ ] ability to pause and resume the slideshow
 
 
 Ideas
-[ ] change name to 'fresco' or 'oris' (Command Line Image Tagger) or 'rat' (Rapid Album Tagger)
+[ ] change name to 'fresco'
+	or 'rat' (Rapid Album Tagger)
+	or 'itad' (Image Tag and Display)
+	or 'sat' (Siimple Album Tagger)
+	rapid fast simple easy tag display present show slide-show album gallery 
 [ ] fill inbox from external media feature
 	-search computer for external media
 	-find 'DCIM' directories
