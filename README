@@ -15,16 +15,20 @@ TODO
 [X] change name to nudusDB/nudaDB/nudumDB. ('nudus' is latin for simple/unadorned/bare)
 [X] make it 'standalone' executable
 [X] make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
-[ ] write README
+[ ] write real README
 [X] implement tag dictionary for searching
 [X] test ability to gracefully abort importing
 [X] move collision checking and skip before prompt for tags
 [ ] save a thumbnail of each imported image for less RAM-intensive browsing?
-[ ] python3 compatibility
+[X] python3 compatibility (probably no longer python2 compatible...)
 [ ] windows compatibility
 [ ] OSX compatibility
 [ ] make search succeed on partial matches
+[ ] full regex implementation (optional)?
+[ ] config file (.nudarc) for specifying optional behaviors
 [ ] commandline option to specify a default tag string which will be preloaded on the Entry bar with each picture during import
+
+
 
 Ideas
 [ ] change name to 'fresco' or 'oris' (Command Line Image Tagger) or 'rat' (Rapid Album Tagger)
@@ -32,8 +36,8 @@ Ideas
 	-search computer for external media
 	-find 'DCIM' directories
 	-copy files in DCIM directories into fresco inbox
-[ ] slideshow feature
+[X] slideshow feature
 	-start a slideshow of all images matching a given tag list
-	-default: only use the tag "show", tag favorite images with "show" so that they appear in slideshow
+NOPE	-default: only use the tag "show", tag favorite images with "show" so that they appear in slideshow
 [ ] consider possible raspberrypi/raspbian optimizations
 	-best possible layman-deployment vector
