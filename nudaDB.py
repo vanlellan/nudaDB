@@ -32,7 +32,7 @@ if sys.argv[1] == "init":
 	if not os.path.exists(ssc.NUDADBTABLE):
 		print("Creating "+ssc.NUDADBTABLE)
 		with open(ssc.NUDADBTABLE, 'w') as table:
-			table.write("#filename\tpath\tdate\ttime\ttags")
+			table.write("#filename\tpath\tdate\ttime\ttags\n")
 
 if sys.argv[1] == "install":
 	print("Installing nudaDB into "+os.getcwd())
@@ -44,7 +44,7 @@ if sys.argv[1] == "install":
 	if not os.path.exists(ssc.NUDADBTABLE):
 		print("Creating "+ssc.NUDADBTABLE)
 		with open(ssc.NUDADBTABLE, 'w') as table:
-			table.write("#filename\tpath\tdate\ttime\ttags")
+			table.write("#filename\tpath\tdate\ttime\ttags\n")
 	if len(sys.argv) > 2:
 		if sys.argv[2] == "-f":
 			print("Forcing")
