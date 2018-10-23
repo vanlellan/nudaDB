@@ -234,7 +234,7 @@ class slideShowClass:
 		try:
 			orientation = thumb._getexif()[0x0112]
 		except:
-			print("EXIF problem!")
+			print("EXIF problem! Setting orientation=0")
 			orientation = 0
 		if orientation in self.rotations:
 			thumb = thumb.rotate(self.rotations[orientation], expand=1)
