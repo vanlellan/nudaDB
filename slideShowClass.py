@@ -197,7 +197,9 @@ class slideShowClass:
 		self.newName = fullHash[-6:]+'.'+extension
 		if self.newName in monthContents:
 			print("COLLISION!     Skipping...")
-			os.system("mv "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/"+self.newName)
+			#if using default import, move file from ./inbox/ to ./inbox/imported/
+			if os.path.isfile('./inbox/'+self.filename):
+				os.system("mv "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/"+self.newName)
 			if self.next_image():
 				self.tag_input()
 
