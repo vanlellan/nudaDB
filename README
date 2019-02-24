@@ -8,7 +8,7 @@ TODO
 [ ] for import, suggest tags (autofill suggestions from previously used tags)
 [ ] check entire db for duplicate files on import? (no, use a separate command, perhaps "status")
 [ ] ability to search db and display images and edit tags
-[ ] implement optparse
+[ ] implement optparse (nope, keep git-style commands)
 [ ] add command line option to keep file in inbox upon successful import
 [X] allow wildcards on command line
 [X] save previously entered tag-string history, accessible with up arrow (importing readline makes raw_input do this automatically)
@@ -29,14 +29,15 @@ TODO
 [ ] commandline option to specify a default tag string which will be preloaded on the Entry bar with each picture during import
 [ ] gracefully handle a file missing
 [ ] ability to pause and resume the slideshow
-
+[ ] fix bug when last file of import is a collision (tag input window doesn't close itself)
 
 Ideas
 [ ] change name to 'fresco'
 	or 'rat' (Rapid Album Tagger)
 	or 'itad' (Image Tag and Display)
-	or 'sat' (Siimple Album Tagger)
+	or 'sat' (Simple Album Tagger)
 	rapid fast simple easy tag display present show slide-show album gallery 
+	or 'hycom' (Hyrule Compendium), or name it after the Lab director or assistant
 [ ] fill inbox from external media feature
 	-search computer for external media
 	-find 'DCIM' directories
