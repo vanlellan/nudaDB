@@ -23,6 +23,8 @@ TODO
 [X] python3 compatibility (probably no longer python2 compatible...)
 [ ] windows compatibility
 [ ] OSX compatibility
+[ ] browser-based client?
+	[ ] how easy is it to write a front-end in something like Dash?
 [ ] make search succeed on partial matches
 [ ] full regex implementation (optional)?
 [ ] config file (.nudarc) for specifying optional behaviors
