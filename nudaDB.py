@@ -49,8 +49,8 @@ if sys.argv[1] == "install":
 		if sys.argv[2] == "-f":
 			print("Forcing")
 			os.system("sudo ln -sf "+os.getcwd()+"/nudaDB.py /bin/nuda")
-		else:
-			os.system("sudo ln -s "+os.getcwd()+"/nudaDB.py /bin/nuda")
+	else:
+		os.system("sudo ln -s "+os.getcwd()+"/nudaDB.py /bin/nuda")
 
 else:
 	if os.path.exists(ssc.NUDADBDIR) and os.path.exists(ssc.NUDADBTABLE):
