@@ -96,6 +96,7 @@ if sys.argv[1] == "slideshow":
 
 	#initialize tk window
 	slideshow = tk.Tk()
+	slideshow.attributes('-type','dialog')
 	my_slideshow = ssc.slideShowClass(slideshow, imageList, 'show')
 	slideshow.mainloop()
 
@@ -125,6 +126,7 @@ if sys.argv[1] == "import":
 	else:
 		inFileNames = sys.argv[2:]
 	importImage = tk.Tk()
+	importImage.attributes('-type','dialog')
 	my_importImage = ssc.slideShowClass(importImage, inFileNames, 'import')
 	importImage.mainloop()
 
