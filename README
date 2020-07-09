@@ -32,6 +32,7 @@ TODO
 [ ] gracefully handle a file missing
 [ ] ability to pause and resume the slideshow
 [ ] fix bug when last file of import is a collision (tag input window doesn't close itself)
+[X] slideshow: shuffle all matching images
 
 Ideas
 [ ] change name to 'fresco'

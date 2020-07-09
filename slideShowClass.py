@@ -22,6 +22,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 import os
 import datetime
 import pickle
+import random
 
 #TODO
 #	Make this class general enough to use for both import and slideshow
@@ -42,6 +43,7 @@ def getImagesMatchingTags(listOfTags):
 	for tag in listOfTags:
 		for result in tagDict[tag]:
 			imagelist.append(result)
+	random.shuffle(imagelist)
 	return imagelist
 
 class slideShowClass:
