@@ -33,6 +33,8 @@ TODO
 [ ] ability to pause and resume the slideshow
 [ ] fix bug when last file of import is a collision (tag input window doesn't close itself)
 [X] slideshow: shuffle all matching images
+[ ] slideshow: pause/resume with spacebar
+[ ] slideshow: forward/backward one step with arrow keys
 
 Ideas
 [ ] change name to 'fresco'
