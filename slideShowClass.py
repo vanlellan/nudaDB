@@ -218,6 +218,16 @@ class slideShowClass:
 				print("Something has gone very wrong...")
 				self.master.quit()
 				return False
+		try:
+			tempFileName = self.listOfImagePaths[self.currentImageIndex]
+			testOpen = Image.open(tempFileName)
+		except:
+			print("Can't open file: "+tempFileName+" (Not an image?) Skipping....")
+			if os.path.isfile('./inbox/'+self.filename):
+				os.system("mv "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/"+self.newName)
+			else:
+				print("Can't find file to skip!? Something has gone wrong...")
+			return False    #skip tag input for this skipped file
 		self.currentImage = ImageTk.PhotoImage(self.makeThumb(self.listOfImagePaths[self.currentImageIndex]))
 		self.showpanel.configure(image=self.currentImage)
 		self.showpanel.image = self.currentImage
