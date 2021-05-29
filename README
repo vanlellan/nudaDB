@@ -35,6 +35,7 @@ TODO
 [X] slideshow: shuffle all matching images
 [ ] slideshow: pause/resume with spacebar
 [ ] slideshow: forward/backward one step with arrow keys
+[ ] ability to gracefully merge two DBs (merge, import, push, pull... choose best word for command)
 
 Ideas
 [ ] change name to 'fresco'
