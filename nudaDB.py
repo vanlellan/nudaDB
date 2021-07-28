@@ -83,7 +83,7 @@ if sys.argv[1] == "search":
 	os.system("rm "+ssc.NUDADBDIR+"../search/*")
 	for result in imageList:
 		filename = result.split('/')[-1]
-		os.system("ln -s "+ssc.NUDADBDIR+"../"+result+" "+ssc.NUDADBDIR+"../search/"+filename)
+		os.system("ln "+ssc.NUDADBDIR+"../"+result+" "+ssc.NUDADBDIR+"../search/"+filename)
 		with open(ssc.NUDADBTABLE, 'r') as dbfile:
 			for line in dbfile:
 				if line[:len(filename)] == filename:
