@@ -85,7 +85,6 @@ class slideShowClass:
 		self.textbox.pack(side='bottom', fill='x', expand=True)
 
 		if self.showOrImport == 'show':
-
 			self.show_next()
 		elif self.showOrImport == 'import':
 			if self.next_image():
