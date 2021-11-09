@@ -105,8 +105,9 @@ class slideShowClass:
                 aTime = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
                 stamps.append(int(aTime.timestamp()))
             except Exception as ex:
-                print("EXIF Problem! Assigning unix timestamp as ", idummy)
                 print(ex)
+                print("EXIF Problem! Assigning unix timestamp as ", idummy)
+                stamps.append(idummy)
                 idummy = idummy + 1
         sortedList = [x for _, x in sorted(zip(stamps,tempList), key=lambda pair: pair[0])]
         self.listOfImagePaths = list(sortedList)
