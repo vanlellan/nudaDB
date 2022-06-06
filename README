@@ -34,6 +34,9 @@ TODO
 [ ] ability to pause and resume the slideshow
 [ ] fix bug when last file of import is a collision (tag input window doesn't close itself)
 [ ] change nudaDBDir subdirectory name format to YYYY-MM rather than "AUG2019" format
+[ ] automatically handle files with spaces in the filename
+[ ] add feature: generate sub-database. output a full nuda database filled with the output of a search
+[ ] add feature: GUI command to edit tags during slideshow
 
 Ideas
 [ ] change name to 'fresco'
