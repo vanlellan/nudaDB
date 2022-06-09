@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Search Test Page</title>
+	<link rel="stylesheet" href="../static/search.css">
+</head>
+<body>
+	<div class="row">
+		{% for image in images %}
+			<a target="_blank" href="{{ image }}">
+			<img src="{{ image }}" alt="The Next Image">
+			</a>
+		{% endfor %}
+	</div>
+</body>
+</html>
