@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Search Test Page</title>
+	<title>Search Results: {{ keyword }}</title>
 	<link rel="stylesheet" href="../static/search.css">
 </head>
 <body>
+	<a href="https://flask.vanlellan.net/{{ keyword }}/{{ prevthisnext[0] }}">Prev Page</a>
+	<a href="https://flask.vanlellan.net/{{ keyword }}/{{ prevthisnext[2] }}">Next Page</a>
+	<br />
 	<div class="row">
 		{% for image in images %}
 			<a target="_blank" href="{{ image }}">
