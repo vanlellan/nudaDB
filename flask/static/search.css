@@ -2,8 +2,8 @@
 img{
 	border: 1px solid #ddd; /* gray border */
 	border-radius: 4px; /* rounded border */
-	padding: 5px; /* some padding */
-	width: 150px; /* set a small width */
+	padding: 2px; /* some padding */
+	width: 25vw; /* set width to 25% of screen width */
 	height: auto;
 }
 
@@ -11,4 +11,3 @@ img{
 img:hover {
 	box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
 }
-
