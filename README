@@ -45,6 +45,7 @@ TODO
 [ ] add feature: generate sub-database. output a full nuda database filled with the output of a search
 [ ] add feature: GUI command to edit tags during slideshow
 [ ] add ability to import video, use vlc for playback, plus a tk window to type in tags as you watch
+[ ] ability to gracefully merge two DBs (merge, import, push, pull... choose best word for command)
 
 Ideas
 [ ] change name to 'fresco'
