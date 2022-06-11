@@ -19,13 +19,17 @@ TODO
 [X] implement tag dictionary for searching
 [X] test ability to gracefully abort importing
 [X] move collision checking and skip before prompt for tags
-[ ] save a thumbnail of each imported image for less RAM-intensive browsing?
+[ ] save a thumbnail of each imported image for less RAM-intensive browsing (/nudaDBThumbs/)
 [X] python3 compatibility (probably no longer python2 compatible...)
 [ ] windows compatibility
 [ ] OSX compatibility
 [ ] browser-based client?
 	[ ] how easy is it to write a front-end in something like Dash?
 	[ ] Jellyfin (or similar) _almost_ works out-of-the-box as a viewer/server for nudaDB
+	[X] Flask! super easy
+	[ ] implement thumbnails for quicker search results, load full image only when clicked
+	[ ] make flask page able to serve up a mix of video and image files as the results of a search
+	[ ] ability to upload, import, and tag via browser?
 [ ] make search succeed on partial matches
 [ ] full regex implementation (optional)?
 [ ] config file (.nudarc) for specifying optional behaviors
@@ -37,6 +41,7 @@ TODO
 [ ] automatically handle files with spaces in the filename
 [ ] add feature: generate sub-database. output a full nuda database filled with the output of a search
 [ ] add feature: GUI command to edit tags during slideshow
+[ ] add ability to import video, use vlc for playback, plus a tk window to type in tags as you watch
 
 Ideas
 [ ] change name to 'fresco'
@@ -54,3 +59,4 @@ Ideas
 NOPE	-default: only use the tag "show", tag favorite images with "show" so that they appear in slideshow
 [ ] consider possible raspberrypi/raspbian optimizations
 	-best possible layman-deployment vector
+	-raspberry pi + hard drive with flask page and dnsmasq for local network, browser-based access to media
