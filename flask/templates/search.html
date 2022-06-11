@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Search Results: {{ keyword }}</title>
+	<link rel="stylesheet" href="../static/search.css">
+</head>
+<body>
+	<div>
+	<a href="https://flask.vanlellan.net/{{ keyword }}/{{ prevthisnext[0] }}">Prev Page</a>
+	<a href="https://flask.vanlellan.net/{{ keyword }}/{{ prevthisnext[2] }}">Next Page</a>
+	</div>
+	<div style="float: right;">
+		Random Tags:
+		{% for tag in randTags %}
+		<a href="https://flask.vanlellan.net/{{ tag }}">{{ tag }}</a>
+		{% endfor %}
+	</div>
+	<br />
+	<hr>
+	<br />
+	<div class="row">
+		{% for image in images %}
+			<a target="_blank" href="{{ image }}">
+				<img src="{{ image }}" alt="Image">
+			</a>
+		{% endfor %}
+	</div>
+	<br />
+	<hr>
+	<br />
+</body>
+</html>
