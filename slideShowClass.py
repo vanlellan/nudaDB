@@ -28,6 +28,16 @@ NUDADBDIR = os.getcwd()+'/nudaDBDir/'
 NUDADBTABLE = os.getcwd()+'/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+def getHash(thefile):
+    BLOCKSIZE = 65536
+    hasher = hashlib.md5()
+    with open(thefile, 'rb') as afile:
+        buf = afile.read(BLOCKSIZE)
+        while len(buf) > 0:
+            hasher.update(buf)
+            buf = afile.read(BLOCKSIZE)
+    return hasher.hexdigest()
+
 def getImagesMatchingTags(listOfTags):
     with open("tags.pickle","rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
@@ -75,7 +85,8 @@ class slideShowClass:
         self.textbox.bind("<Control-Key-w>", self.show_stop)
         self.textbox.pack(side='bottom', fill='x', expand=True)
 
-        self.setup_next_input()
+        while not self.setup_next_input():
+            print(self.listOfImagePaths[self.currentImageIndex], "has been skipped!")
 
         if self.showOrImport == 'import':
             pass
@@ -87,12 +98,31 @@ class slideShowClass:
         self.master.quit()
 
     def send_tags(self, event=None):
-        print("SENDING TAGS")
-        print("SETTING UP NEXT IMAGE")
-        self.setup_next_input()
+        #write table entry and import file
+        self.newTags = self.textbox.get()
+        if self.newTags in ['\\quit', '\\exit', '\\abort']:
+            self.master.quit()
+            return None
+        taglist = self.newTags.split(' ')
+        tags = ','.join(taglist)
+        try:
+            os.system("cp "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+self.month+self.year+'/'+self.newName)
+            #Add entry to table
+            with open(NUDADBTABLE, 'a') as table:
+                table.write(self.newName+'\t'+'./nudaDBDir/'+self.month+self.year+'/'+'\t'+self.dateAndTimes[self.currentImageIndex].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
+            #if using default import, move file from ./inbox/ to ./inbox/imported/
+            if os.path.isfile('./inbox/'+self.filenames[self.currentImageIndex]):
+                os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/")
+        except Exception as ex:
+            print("copy problem!")
+            print(ex)
+        #setup next input file
+        while not self.setup_next_input():
+            print(self.listOfImagePaths[self.currentImageIndex], "has been skipped!")
+        return True
 
     def assess_all_images(self):
-        self.assessments = ["Image" for f in self.listOfImagePaths]
+        self.assessments = [None for f in self.listOfImagePaths]
         self.dateAndTimes = [None for f in self.listOfImagePaths]
         #Get file data
         self.fullpaths = [os.path.abspath(f) for f in self.listOfImagePaths]
@@ -105,40 +135,61 @@ class slideShowClass:
             try:
                 testOpen = Image.open(f)
                 testTkImage = ImageTk.PhotoImage(testOpen)
+                self.assessments[i] = "Image"
             except Exception as ex:
-                print(ex)
                 print("Can't open "+f+"... Not an image!")
-                self.assessments[i] = None
+                print(ex)
             try:
                 fullexif=testOpen._getexif()
                 self.dateAndTimes[i] = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
             except Exception as ex:
-                print(ex)
                 print("EXIF problem! Using file timestamp...")
+                print(ex)
                 try:
                     self.dateAndTimes[i] = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpaths[i]))
                 except Exception as ex:    
-                    print(ex)
                     print("No file timestamp!? Crashing...")
+                    print(ex)
                     self.master.quit()
         print("DEBUG: dateAndTimes = ", self.dateAndTimes)
+        print("DEBUG: assessments = ", self.assessments)
 
     def setup_next_input(self, event=None):
         self.currentImageIndex += 1
         if self.currentImageIndex >= len(self.fullpaths):
             self.master.quit()
             print("DEBUG: ALL DONE")
-            return False
+            return True
         print("DEBUG: index = ", self.currentImageIndex)
         if self.assessments[self.currentImageIndex] == "Image":
             print("DEBUG GOT HERE IF")
+            #check target DIR
+            self.month = MONTHS[self.dateAndTimes[self.currentImageIndex].month-1]
+            self.year = str(self.dateAndTimes[self.currentImageIndex].year)
+            dirContents = os.listdir(NUDADBDIR)
+            dirCheck = NUDADBDIR+self.month+str(self.dateAndTimes[self.currentImageIndex].year)
+            if self.month+str(self.dateAndTimes[self.currentImageIndex].year) in dirContents:
+                pass
+            else:
+                print("Creating "+dirCheck)
+                os.system("mkdir "+dirCheck)
+            #check for collisions
+            monthContents = os.listdir(NUDADBDIR+self.month+self.year)
+            fullHash = getHash(self.fullpaths[self.currentImageIndex])
+            self.newName = fullHash[-6:]+'.'+self.extensions[self.currentImageIndex]
+            if self.newName in monthContents:
+                print("COLLISION!     Skipping...")
+                #if using default import, move file from ./inbox/ to ./inbox/skipped/
+                if os.path.isfile('./inbox/'+self.filenames[self.currentImageIndex]):
+                    os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
+                    return False
             self.currentImage = Image.open(self.fullpaths[self.currentImageIndex]).resize((600,400), Image.ANTIALIAS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
             self.showpanel.config(image = self.currentTkImage)
-            #self.currentTkImage = ImageTk.PhotoImage(file=self.fullpaths[self.currentImageIndex])
         else:
             print("DEBUG GOT HERE ELSE")
-            self.setup_next_input()
+            os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
+            return False
         return True
 
         #loop of mystery

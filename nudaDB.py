@@ -111,9 +111,12 @@ if sys.argv[1] == "reset":
         yesorno = input("Really reset the entire DB? ")
         if yesorno in ['yes', 'y', 'Y', 'Yes', 'YES']:
             print("Moving all imported files back to ./inbox/")
-            os.system("mv ./nudaDBDir/*/*.* ./inbox/")
-            print("Wiping ./inbox/imported/")
-            os.system("rm ./inbox/imported/*")
+            os.system("mv ./inbox/imported/* ./inbox/")
+            print("Moving all skipped files back to ./inbox/")
+            os.system("mv ./inbox/skipped/* ./inbox/")
+            print("Wiping nudaDBDir")
+            os.system("rm ./nudaDBDir/*/*")
+            os.system("rmdir ./nudaDBDir/*")
             print("Wiping nudaDBTable.txt")
             os.system("rm "+ssc.NUDADBTABLE)
             if not os.path.exists(ssc.NUDADBTABLE):
