@@ -56,7 +56,7 @@ def myPlay(aPlayer):
 class slideShowClass:
     def __init__(self,master,listOfImagePaths,showOrImport):
         self.master = master
-        self.listOfImagePaths = listOfImagePaths
+        self.data = [{"path":a} for a in listOfImagePaths]
         self.showOrImport = showOrImport
 
         self.input_strings = []
@@ -71,6 +71,12 @@ class slideShowClass:
         master.configure(background='black')
 
         self.assess_all_images()
+        #put sorting on hold until I get all object lists converted to dictionaries in one list
+        #print("UNSORTED: ", self.dateAndTimes)
+        #unixtimes = [a.timestamp() for a in self.dateAndTimes]
+        #print("UNIX:, ", unix)
+        #unix.sort()
+        #print("SORTED: ", unix)
 
         print("DEBUG currentTkImage = ", self.currentTkImage)
 
@@ -104,7 +110,7 @@ class slideShowClass:
         self.textbox.pack(side='bottom', fill='x', expand=True)
 
         while not self.setup_next_input():
-            print(self.listOfImagePaths[self.currentImageIndex], "has been skipped!")
+            print(self.data['path'][self.currentImageIndex], "has been skipped!")
 
         if self.showOrImport == 'import':
             pass
@@ -147,125 +153,125 @@ class slideShowClass:
         taglist = self.newTags.split(' ')
         tags = ','.join(taglist)
         try:
-            os.system("cp "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+self.month+self.year+'/'+self.newName)
+            os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.month+self.year+'/'+self.newName)
             #Add entry to table
             with open(NUDADBTABLE, 'a') as table:
-                table.write(self.newName+'\t'+'./nudaDBDir/'+self.month+self.year+'/'+'\t'+self.dateAndTimes[self.currentImageIndex].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
+                table.write(self.newName+'\t'+'./nudaDBDir/'+self.month+self.year+'/'+'\t'+self.data[self.currentImageIndex]["dateAndTime"].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
             #if using default import, move file from ./inbox/ to ./inbox/imported/
-            if os.path.isfile('./inbox/'+self.filenames[self.currentImageIndex]):
-                os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/")
+            if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
+                os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/")
         except Exception as ex:
             print("copy problem!")
             print(ex)
         #setup next input file
         self.textbox.delete(0, tk.END)
         while not self.setup_next_input():
-            print(self.listOfImagePaths[self.currentImageIndex], "has been skipped!")
+            print(self.data[self.currentImageIndex]["path"], "has been skipped!")
         return True
 
     def assess_all_images(self):
-        self.assessments = [None for f in self.listOfImagePaths]
-        self.dateAndTimes = [None for f in self.listOfImagePaths]
-        #Get file data
-        self.fullpaths = [os.path.abspath(f) for f in self.listOfImagePaths]
-        self.filenames = [f.split('/')[-1] for f in self.fullpaths]
-        self.extensions = [f.split('.')[-1] for f in self.filenames]
-        self.dirpaths = [f[:-len(self.filenames[i])] for i,f in enumerate(self.fullpaths)]
+        for d in self.data:
+            d["assessment"] = None
+            d["dateAndTime"] = None
+            #Get file data
+            d["fullpath"] = os.path.abspath(d["path"])
+            d["filename"] = d["fullpath"].split('/')[-1]
+            d["extension"] = d["filename"].split('.')[-1]
+            d["dirpath"] = d["fullpath"][:-len(d["filename"])]
         #try to open all files as images
-        for i,f in enumerate(self.fullpaths):
+        for d in self.data:
             testOpen = None
             try:
-                testOpen = Image.open(f)
+                testOpen = Image.open(d["fullpath"])
                 testTkImage = ImageTk.PhotoImage(testOpen)
-                self.assessments[i] = "Image"
+                d["assessment"] = "Image"
             except Exception as ex:
-                print("Can't open "+f+"... Not an image!")
+                print("Can't open "+d["fullpath"]+"... Not an image!")
                 print(ex)
         #check the rest to see if they have known video format extensions
-        for i,a in enumerate(self.assessments):
-            if a is None:
-                if self.extensions[i] in ["mp4","avi","AVI","3g2","MPG","mpg","wmv","MOV"]:
-                    self.assessments[i] = "Video"
+            if d["assessment"] is None:
+                if d["extension"] in ["mp4","avi","AVI","3g2","MPG","mpg","wmv","MOV"]:
+                    d["assessment"] = "Video"
         #get EXIF date and time for files assessed as images
-        for i,a in enumerate(self.assessments):
-            if a == "Image":
+        for d in self.data:
+            if d["assessment"] == "Image":
                 try:
-                    testOpen = Image.open(self.fullpaths[i])
+                    testOpen = Image.open(d["fullpath"])
                     fullexif=testOpen._getexif()
-                    self.dateAndTimes[i] = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
+                    d["dateAndTime"] = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
                 except Exception as ex:
                     print("PIL EXIF failed! Using exiftool...")
                     try:
-                        exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', self.fullpaths[i]], capture_output=True)
+                        exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', d["fullpath"]], capture_output=True)
                         exiftoolDate = str(exiftoolOutput.stdout)[-22:-3]
-                        self.dateAndTimes[i] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
+                        d["dateAndTime"] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
                     except:
                         print("exiftool -CreateDate failed! Using file timestamp...")
                         print(ex)
                         try:
-                            self.dateAndTimes[i] = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpaths[i]))
+                            d["dateAndTime"] = datetime.datetime.fromtimestamp(os.path.getmtime(d["fullpath"]))
                         except Exception as ex:    
                             print("No file timestamp!? Crashing...")
                             print(ex)
                             self.master.quit()
-            elif a == "Video":
+            elif d["assessment"] == "Video":
                 try:
-                    exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', self.fullpaths[i]], capture_output=True)
+                    exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', d["fullpath"]], capture_output=True)
                     exiftoolDate = str(exiftoolOutput.stdout)[-22:-3]
-                    self.dateAndTimes[i] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
+                    d["dateAndTime"] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
                 except Exception as ex:
                     print("exiftool -CreateDate failed! Using file timestamp...")
                     print(ex)
                     try:
-                        self.dateAndTimes[i] = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpaths[i]))
+                        d["dateAndTime"] = datetime.datetime.fromtimestamp(os.path.getmtime(d["fullpath"]))
                     except Exception as ex:    
                         print("No file timestamp!? Crashing...")
                         print(ex)
                         self.master.quit()
 
-        print("DEBUG: dateAndTimes = ", self.dateAndTimes)
-        print("DEBUG: assessments = ", self.assessments)
+        print("DEBUG: dateAndTimes = ", d["dateAndTime"])
+        print("DEBUG: assessments = ", d["assessment"])
 
     def setup_next_input(self, event=None):
         self.currentImageIndex += 1
-        if self.currentImageIndex >= len(self.fullpaths):
+        if self.currentImageIndex >= len(self.data):
             self.master.quit()
             print("DEBUG: ALL DONE")
             return True
         print("DEBUG: index = ", self.currentImageIndex)
-        if self.assessments[self.currentImageIndex] is not None:
+        if self.data[self.currentImageIndex]["assessment"] is not None:
             print("DEBUG GOT HERE IF")
             #check target DIR
-            self.month = MONTHS[self.dateAndTimes[self.currentImageIndex].month-1]
-            self.year = str(self.dateAndTimes[self.currentImageIndex].year)
+            self.month = MONTHS[self.data[self.currentImageIndex]["dateAndTime"].month-1]
+            self.year = str(self.data[self.currentImageIndex]["dateAndTime"].year)
             dirContents = os.listdir(NUDADBDIR)
-            dirCheck = NUDADBDIR+self.month+str(self.dateAndTimes[self.currentImageIndex].year)
-            if self.month+str(self.dateAndTimes[self.currentImageIndex].year) in dirContents:
+            dirCheck = NUDADBDIR+self.month+self.year
+            if self.month+self.year in dirContents:
                 pass
             else:
                 print("Creating "+dirCheck)
                 os.system("mkdir "+dirCheck)
             #check for collisions
             monthContents = os.listdir(NUDADBDIR+self.month+self.year)
-            fullHash = getHash(self.fullpaths[self.currentImageIndex])
-            self.newName = fullHash[-6:]+'.'+self.extensions[self.currentImageIndex]
+            fullHash = getHash(self.data[self.currentImageIndex]["fullpath"])
+            self.newName = fullHash[-6:]+'.'+self.data[self.currentImageIndex]["extension"]
             if self.newName in monthContents:
                 print("COLLISION!     Skipping...")
                 #if using default import, move file from ./inbox/ to ./inbox/skipped/
-                if os.path.isfile('./inbox/'+self.filenames[self.currentImageIndex]):
-                    os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
+                if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
+                    os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
                     return False
-        if self.assessments[self.currentImageIndex] == "Image":
-            self.currentImage = Image.open(self.fullpaths[self.currentImageIndex]).resize((600,400), Image.ANTIALIAS)
+        if self.data[self.currentImageIndex]["assessment"] == "Image":
+            self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((600,400), Image.ANTIALIAS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
             self.showpanel.config(image = self.currentTkImage)
             self.frameImg.tkraise()
-        elif self.assessments[self.currentImageIndex] == "Video":
+        elif self.data[self.currentImageIndex]["assessment"] == "Video":
             self.frameVid.tkraise()
-            self.vlcMedia = self.vlcInstance.media_new(self.fullpaths[self.currentImageIndex])
+            self.vlcMedia = self.vlcInstance.media_new(self.data[self.currentImageIndex]["fullpath"])
             self.vlcPlayer.set_media(self.vlcMedia)
         else:
             print("DEBUG GOT HERE ELSE")
-            os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
+            os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
             return False
         return True
