@@ -82,21 +82,21 @@ class slideShowClass:
         self.qButton = tk.Button(self.frameButtons, text="Quit", command=master.destroy)
         self.qButton.pack()
 
-        self.textbox = tk.Entry(self.frameButtons)
-        self.textbox.focus()
-        self.textbox.bind("<Return>", self.send_tags)
-        self.textbox.bind("<Control-Key-w>", self.show_stop)
-        self.textbox.pack(side='bottom', fill='x', expand=True)
-
         #set up vlc video player
         self.vlcInstance = vlc.Instance()
         self.vlcPlayer = self.vlcInstance.media_player_new()
         self.vlcPlayer.set_xwindow(self.frameVid.winfo_id())   #connect vlc to tk
-        self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:myPlay(self.vlcPlayer))
+        #self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:myPlay(self.vlcPlayer))
+        self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:self.playVid())
         self.pButton.pack()
-        #use these later
-        #self.vlcMedia = self.vlcInstance.media_new("path_to_file")
-        #self.vlcPlayer.set_media(self.vlcMedia)
+
+        self.textbox = tk.Entry(self.frameButtons)
+        self.textbox.focus()
+        self.textbox.bind("<Return>", self.send_tags)
+        self.textbox.bind("<Control-Key-w>", self.show_stop)
+        self.textbox.bind("<Control-Key-p>", self.playVid)
+        self.textbox.pack(side='bottom', fill='x', expand=True)
+
 
         while not self.setup_next_input():
             print(self.listOfImagePaths[self.currentImageIndex], "has been skipped!")
@@ -106,6 +106,10 @@ class slideShowClass:
         else:
             print("Non-Import Currently Disabled!")
             self.master.quit()
+
+    def playVid(self, event=None):
+        self.vlcPlayer.set_media(self.vlcPlayer.get_media())
+        self.vlcPlayer.play()
 
     def show_stop(self, event):
         self.master.quit()
@@ -220,37 +224,11 @@ class slideShowClass:
             self.showpanel.config(image = self.currentTkImage)
             self.frameImg.tkraise()
         elif self.assessments[self.currentImageIndex] == "Video":
-            print("VIDEO CODE GOES HERE")
+            self.frameVid.tkraise()
             self.vlcMedia = self.vlcInstance.media_new(self.fullpaths[self.currentImageIndex])
             self.vlcPlayer.set_media(self.vlcMedia)
-            self.frameVid.tkraise()
         else:
             print("DEBUG GOT HERE ELSE")
             os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
             return False
         return True
-
-        #loop of mystery
-#        def show_next(self, event=None):
-#            self.next_image(event)              #call next_image, passing event
-#            self.afterID = self.master.after(2000, self.show_next)      #after 2000?, call show_next again, saving afterID
-#
-#        def next_image(self, event=None):
-#            #cancel after mechanism?
-#            #check if this no more files
-#            #open file as image
-#            #show image with tk
-#            #return true
-#
-#        def send_tags(self, event=None):
-#            #mapped to Return key
-#
-#        def tag_input(self, event=None):
-#            #prepare to send tags for current image
-#            #get path, filename, and extension
-#            #get exif info
-#            #check if month dir exists, if not, create it
-#            #get Hash, create new filename
-#            #check for collisions
-#            #call for next image
-
