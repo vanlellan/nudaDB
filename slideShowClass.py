@@ -72,8 +72,8 @@ class slideShowClass:
 
         self.assess_all_images()
 
-        #sort input files according to dateAndTime
-        self.data.sort(key=lambda d: d["dateAndTime"])
+        #sort input files according to datetime
+        self.data.sort(key=lambda d: d["datetime"])
 
         self.frameButtons = tk.Frame(master, width=600, height=100)
         self.frameImg = tk.Frame(master, width=600, height=400)
@@ -151,7 +151,7 @@ class slideShowClass:
             os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.month+self.year+'/'+self.newName)
             #Add entry to table
             with open(NUDADBTABLE, 'a') as table:
-                table.write(self.newName+'\t'+'./nudaDBDir/'+self.month+self.year+'/'+'\t'+self.data[self.currentImageIndex]["dateAndTime"].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
+                table.write(self.newName+'\t'+'./nudaDBDir/'+self.month+self.year+'/'+'\t'+self.data[self.currentImageIndex]["datetime"].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
             #if using default import, move file from ./inbox/ to ./inbox/imported/
             if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
                 os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/")
@@ -167,7 +167,7 @@ class slideShowClass:
     def assess_all_images(self):
         for d in self.data:
             d["assessment"] = None
-            d["dateAndTime"] = None
+            d["datetime"] = None
             #Get file data
             d["fullpath"] = os.path.abspath(d["path"])
             d["filename"] = d["fullpath"].split('/')[-1]
@@ -193,18 +193,18 @@ class slideShowClass:
                 try:
                     testOpen = Image.open(d["fullpath"])
                     fullexif=testOpen._getexif()
-                    d["dateAndTime"] = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
+                    d["datetime"] = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
                 except Exception as ex:
                     print("PIL EXIF failed! Using exiftool...")
                     try:
                         exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', d["fullpath"]], capture_output=True)
                         exiftoolDate = str(exiftoolOutput.stdout)[-22:-3]
-                        d["dateAndTime"] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
+                        d["datetime"] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
                     except:
                         print("exiftool -CreateDate failed! Using file timestamp...")
                         print(ex)
                         try:
-                            d["dateAndTime"] = datetime.datetime.fromtimestamp(os.path.getmtime(d["fullpath"]))
+                            d["datetime"] = datetime.datetime.fromtimestamp(os.path.getmtime(d["fullpath"]))
                         except Exception as ex:    
                             print("No file timestamp!? Crashing...")
                             print(ex)
@@ -213,19 +213,16 @@ class slideShowClass:
                 try:
                     exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', d["fullpath"]], capture_output=True)
                     exiftoolDate = str(exiftoolOutput.stdout)[-22:-3]
-                    d["dateAndTime"] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
+                    d["datetime"] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
                 except Exception as ex:
                     print("exiftool -CreateDate failed! Using file timestamp...")
                     print(ex)
                     try:
-                        d["dateAndTime"] = datetime.datetime.fromtimestamp(os.path.getmtime(d["fullpath"]))
+                        d["datetime"] = datetime.datetime.fromtimestamp(os.path.getmtime(d["fullpath"]))
                     except Exception as ex:    
                         print("No file timestamp!? Crashing...")
                         print(ex)
                         self.master.quit()
-
-        print("DEBUG: dateAndTimes = ", d["dateAndTime"])
-        print("DEBUG: assessments = ", d["assessment"])
 
     def setup_next_input(self, event=None):
         self.currentImageIndex += 1
@@ -233,12 +230,10 @@ class slideShowClass:
             self.master.quit()
             print("DEBUG: ALL DONE")
             return True
-        print("DEBUG: index = ", self.currentImageIndex)
         if self.data[self.currentImageIndex]["assessment"] is not None:
-            print("DEBUG GOT HERE IF")
             #check target DIR
-            self.month = MONTHS[self.data[self.currentImageIndex]["dateAndTime"].month-1]
-            self.year = str(self.data[self.currentImageIndex]["dateAndTime"].year)
+            self.month = MONTHS[self.data[self.currentImageIndex]["datetime"].month-1]
+            self.year = str(self.data[self.currentImageIndex]["datetime"].year)
             dirContents = os.listdir(NUDADBDIR)
             dirCheck = NUDADBDIR+self.month+self.year
             if self.month+self.year in dirContents:
@@ -266,7 +261,6 @@ class slideShowClass:
             self.vlcMedia = self.vlcInstance.media_new(self.data[self.currentImageIndex]["fullpath"])
             self.vlcPlayer.set_media(self.vlcMedia)
         else:
-            print("DEBUG GOT HERE ELSE")
             os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
             return False
         return True
