@@ -71,14 +71,9 @@ class slideShowClass:
         master.configure(background='black')
 
         self.assess_all_images()
-        #put sorting on hold until I get all object lists converted to dictionaries in one list
-        #print("UNSORTED: ", self.dateAndTimes)
-        #unixtimes = [a.timestamp() for a in self.dateAndTimes]
-        #print("UNIX:, ", unix)
-        #unix.sort()
-        #print("SORTED: ", unix)
 
-        print("DEBUG currentTkImage = ", self.currentTkImage)
+        #sort input files according to dateAndTime
+        self.data.sort(key=lambda d: d["dateAndTime"])
 
         self.frameButtons = tk.Frame(master, width=600, height=100)
         self.frameImg = tk.Frame(master, width=600, height=400)
