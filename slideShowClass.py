@@ -58,6 +58,9 @@ class slideShowClass:
         self.listOfImagePaths = listOfImagePaths
         self.showOrImport = showOrImport
 
+        self.input_strings = []
+        self.currentInputIndex = 0
+
         self.currentTkImage = None
         self.currentImageIndex = -1
 
@@ -95,8 +98,9 @@ class slideShowClass:
         self.textbox.bind("<Return>", self.send_tags)
         self.textbox.bind("<Control-Key-w>", self.show_stop)
         self.textbox.bind("<Control-Key-p>", self.playVid)
+        self.textbox.bind("<Up>", self.input_hist_prev)
+        self.textbox.bind("<Down>", self.input_hist_next)
         self.textbox.pack(side='bottom', fill='x', expand=True)
-
 
         while not self.setup_next_input():
             print(self.listOfImagePaths[self.currentImageIndex], "has been skipped!")
@@ -106,6 +110,23 @@ class slideShowClass:
         else:
             print("Non-Import Currently Disabled!")
             self.master.quit()
+
+    def input_hist_prev(self, event=None):
+        self.currentInputIndex -= 1
+        if self.currentInputIndex >= -len(self.input_strings):
+            self.textbox.delete(0, tk.END)
+            self.textbox.insert(0, self.input_strings[self.currentInputIndex])
+        else:
+            self.currentInputIndex += 1
+
+    def input_hist_next(self, event=None):
+        self.currentInputIndex += 1
+        if self.currentInputIndex < 0:
+            self.textbox.delete(0, tk.END)
+            self.textbox.insert(0, self.input_strings[self.currentInputIndex])
+        else:
+            self.currentInputIndex = 0
+            self.textbox.delete(0, tk.END)
 
     def playVid(self, event=None):
         self.vlcPlayer.set_media(self.vlcPlayer.get_media())
@@ -120,6 +141,8 @@ class slideShowClass:
         if self.newTags in ['\\quit', '\\exit', '\\abort']:
             self.master.quit()
             return None
+        else:
+            self.input_strings.append(self.newTags)
         taglist = self.newTags.split(' ')
         tags = ','.join(taglist)
         try:
@@ -134,6 +157,7 @@ class slideShowClass:
             print("copy problem!")
             print(ex)
         #setup next input file
+        self.textbox.delete(0, tk.END)
         while not self.setup_next_input():
             print(self.listOfImagePaths[self.currentImageIndex], "has been skipped!")
         return True
