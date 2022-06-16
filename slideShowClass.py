@@ -19,6 +19,7 @@ import hashlib
 import tkinter as tk
 from PIL import Image, ImageFile, ImageTk
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+import vlc
 import os
 import datetime
 import pickle
@@ -47,6 +48,10 @@ def getImagesMatchingTags(listOfTags):
             imagelist.append(result)
     return imagelist
 
+def myPlay(aPlayer):
+    aPlayer.set_media(aPlayer.get_media())
+    aPlayer.play()
+
 class slideShowClass:
     def __init__(self,master,listOfImagePaths,showOrImport):
         self.master = master
@@ -67,23 +72,31 @@ class slideShowClass:
 
         self.frameButtons = tk.Frame(master, width=600, height=100)
         self.frameImg = tk.Frame(master, width=600, height=400)
+        self.frameVid = tk.Frame(master, width=600, height=400)
         self.frameImg.place(anchor='center', rely=0.5, relx=0.5)
         self.showpanel = tk.Label(self.frameImg, image=self.currentTkImage)
         self.showpanel.pack()
-        self.frameImg.grid(row=0, column=0)
+        self.frameImg.grid(row=0, column=0, sticky="news")  #what does sticky do?
+        self.frameVid.grid(row=0, column=0, sticky="news")
         self.frameButtons.grid(row=1, column=0)
         self.qButton = tk.Button(self.frameButtons, text="Quit", command=master.destroy)
         self.qButton.pack()
-
-        #self.showpanel = tk.Label(master, image=self.currentTkImage)
-        #self.showpanel.pack(fill='both', expand='yes')
-        #self.showpanel.pack()
 
         self.textbox = tk.Entry(self.frameButtons)
         self.textbox.focus()
         self.textbox.bind("<Return>", self.send_tags)
         self.textbox.bind("<Control-Key-w>", self.show_stop)
         self.textbox.pack(side='bottom', fill='x', expand=True)
+
+        #set up vlc video player
+        self.vlcInstance = vlc.Instance()
+        self.vlcPlayer = self.vlcInstance.media_player_new()
+        self.vlcPlayer.set_xwindow(self.frameVid.winfo_id())   #connect vlc to tk
+        self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:myPlay(self.vlcPlayer))
+        self.pButton.pack()
+        #use these later
+        #self.vlcMedia = self.vlcInstance.media_new("path_to_file")
+        #self.vlcPlayer.set_media(self.vlcMedia)
 
         while not self.setup_next_input():
             print(self.listOfImagePaths[self.currentImageIndex], "has been skipped!")
@@ -139,18 +152,36 @@ class slideShowClass:
             except Exception as ex:
                 print("Can't open "+f+"... Not an image!")
                 print(ex)
-            try:
-                fullexif=testOpen._getexif()
-                self.dateAndTimes[i] = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
-            except Exception as ex:
-                print("EXIF problem! Using file timestamp...")
-                print(ex)
+        #check the rest to see if they have known video format extensions
+        for i,a in enumerate(self.assessments):
+            if a is None:
+                if self.extensions[i] in ["mp4","avi","AVI","3g2","MPG","mpg","wmv","MOV"]:
+                    self.assessments[i] = "Video"
+        #get EXIF date and time for files assessed as images
+        for i,a in enumerate(self.assessments):
+            if a == "Image":
+                try:
+                    testOpen = Image.open(self.fullpaths[i])
+                    fullexif=testOpen._getexif()
+                    self.dateAndTimes[i] = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
+                except Exception as ex:
+                    print("EXIF problem! Using file timestamp...")
+                    print(ex)
+                    try:
+                        self.dateAndTimes[i] = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpaths[i]))
+                    except Exception as ex:    
+                        print("No file timestamp!? Crashing...")
+                        print(ex)
+                        self.master.quit()
+            elif a == "Video":
+                print("WARNING: using file timestamp for video for now!")   #maybe use an external call to exiftool?
                 try:
                     self.dateAndTimes[i] = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpaths[i]))
                 except Exception as ex:    
                     print("No file timestamp!? Crashing...")
                     print(ex)
                     self.master.quit()
+
         print("DEBUG: dateAndTimes = ", self.dateAndTimes)
         print("DEBUG: assessments = ", self.assessments)
 
@@ -161,7 +192,7 @@ class slideShowClass:
             print("DEBUG: ALL DONE")
             return True
         print("DEBUG: index = ", self.currentImageIndex)
-        if self.assessments[self.currentImageIndex] == "Image":
+        if self.assessments[self.currentImageIndex] is not None:
             print("DEBUG GOT HERE IF")
             #check target DIR
             self.month = MONTHS[self.dateAndTimes[self.currentImageIndex].month-1]
@@ -183,9 +214,16 @@ class slideShowClass:
                 if os.path.isfile('./inbox/'+self.filenames[self.currentImageIndex]):
                     os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
                     return False
+        if self.assessments[self.currentImageIndex] == "Image":
             self.currentImage = Image.open(self.fullpaths[self.currentImageIndex]).resize((600,400), Image.ANTIALIAS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
             self.showpanel.config(image = self.currentTkImage)
+            self.frameImg.tkraise()
+        elif self.assessments[self.currentImageIndex] == "Video":
+            print("VIDEO CODE GOES HERE")
+            self.vlcMedia = self.vlcInstance.media_new(self.fullpaths[self.currentImageIndex])
+            self.vlcPlayer.set_media(self.vlcMedia)
+            self.frameVid.tkraise()
         else:
             print("DEBUG GOT HERE ELSE")
             os.system("mv "+self.fullpaths[self.currentImageIndex].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
