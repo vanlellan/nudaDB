@@ -24,6 +24,7 @@ import os
 import datetime
 import pickle
 import random
+import subprocess
 
 NUDADBDIR = os.getcwd()+'/nudaDBDir/'
 NUDADBTABLE = os.getcwd()+'/nudaDBTable.txt'
@@ -109,7 +110,7 @@ class slideShowClass:
             pass
         else:
             print("Non-Import Currently Disabled!")
-            self.master.quit()
+            self.master.quit()  #this doesn't actually end the program... why?
 
     def input_hist_prev(self, event=None):
         self.currentInputIndex -= 1
@@ -193,7 +194,27 @@ class slideShowClass:
                     fullexif=testOpen._getexif()
                     self.dateAndTimes[i] = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
                 except Exception as ex:
-                    print("EXIF problem! Using file timestamp...")
+                    print("PIL EXIF failed! Using exiftool...")
+                    try:
+                        exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', self.fullpaths[i]], capture_output=True)
+                        exiftoolDate = str(exiftoolOutput.stdout)[-22:-3]
+                        self.dateAndTimes[i] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
+                    except:
+                        print("exiftool -CreateDate failed! Using file timestamp...")
+                        print(ex)
+                        try:
+                            self.dateAndTimes[i] = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpaths[i]))
+                        except Exception as ex:    
+                            print("No file timestamp!? Crashing...")
+                            print(ex)
+                            self.master.quit()
+            elif a == "Video":
+                try:
+                    exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', self.fullpaths[i]], capture_output=True)
+                    exiftoolDate = str(exiftoolOutput.stdout)[-22:-3]
+                    self.dateAndTimes[i] = datetime.datetime.strptime(exiftoolDate, "%Y:%m:%d %H:%M:%S")
+                except Exception as ex:
+                    print("exiftool -CreateDate failed! Using file timestamp...")
                     print(ex)
                     try:
                         self.dateAndTimes[i] = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpaths[i]))
@@ -201,14 +222,6 @@ class slideShowClass:
                         print("No file timestamp!? Crashing...")
                         print(ex)
                         self.master.quit()
-            elif a == "Video":
-                print("WARNING: using file timestamp for video for now!")   #maybe use an external call to exiftool?
-                try:
-                    self.dateAndTimes[i] = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpaths[i]))
-                except Exception as ex:    
-                    print("No file timestamp!? Crashing...")
-                    print(ex)
-                    self.master.quit()
 
         print("DEBUG: dateAndTimes = ", self.dateAndTimes)
         print("DEBUG: assessments = ", self.assessments)
