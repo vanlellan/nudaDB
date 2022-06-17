@@ -24,11 +24,11 @@ TODO
 [ ] windows compatibility
 [ ] OSX compatibility
 [ ] browser-based client?
-	[ ] how easy is it to write a front-end in something like Dash?
-	[ ] Jellyfin (or similar) _almost_ works out-of-the-box as a viewer/server for nudaDB
+	[-] how easy is it to write a front-end in something like Dash?
+	[-] Jellyfin (or similar) _almost_ works out-of-the-box as a viewer/server for nudaDB
 	[X] Flask! super easy
 	[ ] implement thumbnails for quicker search results, load full image only when clicked
-	[ ] make flask page able to serve up a mix of video and image files as the results of a search
+	[X] make flask page able to serve up a mix of video and image files as the results of a search
 	[ ] ability to upload, import, and tag via browser?
 [ ] make search succeed on partial matches
 [ ] full regex implementation (optional)?
@@ -44,8 +44,9 @@ TODO
 [ ] automatically handle files with spaces in the filename
 [ ] add feature: generate sub-database. output a full nuda database filled with the output of a search
 [ ] add feature: GUI command to edit tags during slideshow
-[ ] add ability to import video, use vlc for playback, plus a tk window to type in tags as you watch
+[X] add ability to import video, use vlc embedded in tk window
 [ ] ability to gracefully merge two DBs (merge, import, push, pull... choose best word for command)
+[ ] add another tkEntry, which is auto-filled with the datetime info, this can be modified by the user, and then send_tags uses it
 
 Ideas
 [ ] change name to 'fresco'
