@@ -29,6 +29,10 @@ if sys.argv[1] == "init":
     os.system("mkdir ./search/")
     os.system("mkdir ./inbox/imported/")
     os.system("mkdir ./inbox/skipped/")
+    os.system("mkdir ./flask/")
+    installDir = os.path.join(os.path.split(os.path.realpath("/bin/nuda"))[0])+'/'
+    os.system("cp -r "+installDir+"flask/* ./flask/")
+    os.system("ln -s ./nudaDBDir/ ./flask/static/nudaDBDir")
     if not os.path.exists(imp.NUDADBTABLE):
         print("Creating "+imp.NUDADBTABLE)
         with open(imp.NUDADBTABLE, 'w') as table:
