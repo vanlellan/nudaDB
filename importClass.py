@@ -149,7 +149,7 @@ class importClass:
         else:
             self.input_strings.append(self.newTags)
         taglist = self.newTags.split(' ')
-        tags = ','.join(taglist)+self.data[self.currentImageIndex]["assessment"]
+        tags = ','.join(taglist)+','+self.data[self.currentImageIndex]["assessment"]
         try:
             os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.month+self.year+'/'+self.newName)
             #Add entry to table
