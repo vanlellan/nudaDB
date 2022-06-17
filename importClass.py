@@ -149,7 +149,7 @@ class importClass:
         else:
             self.input_strings.append(self.newTags)
         taglist = self.newTags.split(' ')
-        tags = ','.join(taglist)
+        tags = ','.join(taglist)+self.data[self.currentImageIndex]["assessment"]
         try:
             os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.month+self.year+'/'+self.newName)
             #Add entry to table
@@ -182,17 +182,17 @@ class importClass:
             try:
                 testOpen = Image.open(d["fullpath"])
                 testTkImage = ImageTk.PhotoImage(testOpen)
-                d["assessment"] = "Image"
+                d["assessment"] = "image"
             except Exception as ex:
                 print("Can't open "+d["fullpath"]+"... Not an image!")
                 print(ex)
         #check the rest to see if they have known video format extensions
             if d["assessment"] is None:
                 if d["extension"] in ["mp4","avi","AVI","3g2","MPG","mpg","wmv","MOV"]:
-                    d["assessment"] = "Video"
+                    d["assessment"] = "video"
         #get EXIF date and time for files assessed as images
         for d in self.data:
-            if d["assessment"] == "Image":
+            if d["assessment"] == "image":
                 try:
                     testOpen = Image.open(d["fullpath"])
                     fullexif=testOpen._getexif()
@@ -212,7 +212,7 @@ class importClass:
                             print("No file timestamp!? Crashing...")
                             print(ex)
                             self.master.quit()
-            elif d["assessment"] == "Video":
+            elif d["assessment"] == "video":
                 try:
                     exiftoolOutput = subprocess.run(['exiftool', '-CreateDate', d["fullpath"]], capture_output=True)
                     exiftoolDate = str(exiftoolOutput.stdout)[-22:-3]
@@ -254,12 +254,12 @@ class importClass:
                 if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
                     os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
                     return False
-        if self.data[self.currentImageIndex]["assessment"] == "Image":
+        if self.data[self.currentImageIndex]["assessment"] == "image":
             self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((self.width,self.height), Image.ANTIALIAS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
             self.showpanel.config(image = self.currentTkImage)
             self.frameImg.tkraise()
-        elif self.data[self.currentImageIndex]["assessment"] == "Video":
+        elif self.data[self.currentImageIndex]["assessment"] == "video":
             self.frameVid.tkraise()
             self.vlcMedia = self.vlcInstance.media_new(self.data[self.currentImageIndex]["fullpath"])
             self.vlcPlayer.set_media(self.vlcMedia)
