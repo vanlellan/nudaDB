@@ -53,11 +53,10 @@ def myPlay(aPlayer):
     aPlayer.set_media(aPlayer.get_media())
     aPlayer.play()
 
-class slideShowClass:
-    def __init__(self,master,listOfImagePaths,showOrImport):
+class importClass:
+    def __init__(self,master,listOfImagePaths):
         self.master = master
         self.data = [{"path":a} for a in listOfImagePaths]
-        self.showOrImport = showOrImport
 
         self.input_strings = []
         self.currentInputIndex = 0
@@ -65,9 +64,13 @@ class slideShowClass:
         self.currentTkImage = None
         self.currentImageIndex = -1
 
-        master.title("Slide Show")
+        self.width = 1200
+        self.height = 800
+        self.boxHeight = 30
+
+        master.title("Nuda Import")
         #master.geometry(str(round(0.9*master.winfo_screenwidth()))+'x'+str(round(0.9*master.winfo_screenheight())))
-        master.geometry('600x500')
+        master.geometry(str(self.width)+'x'+str(self.height+self.boxHeight))
         master.configure(background='black')
 
         self.assess_all_images()
@@ -75,9 +78,9 @@ class slideShowClass:
         #sort input files according to datetime
         self.data.sort(key=lambda d: d["datetime"])
 
-        self.frameButtons = tk.Frame(master, width=600, height=100)
-        self.frameImg = tk.Frame(master, width=600, height=400)
-        self.frameVid = tk.Frame(master, width=600, height=400)
+        self.frameButtons = tk.Frame(master, width=self.width, height=self.boxHeight)
+        self.frameImg = tk.Frame(master, width=self.width, height=self.height)
+        self.frameVid = tk.Frame(master, width=self.width, height=self.height)
         self.frameImg.place(anchor='center', rely=0.5, relx=0.5)
         self.showpanel = tk.Label(self.frameImg, image=self.currentTkImage)
         self.showpanel.pack()
@@ -85,7 +88,7 @@ class slideShowClass:
         self.frameVid.grid(row=0, column=0, sticky="news")
         self.frameButtons.grid(row=1, column=0)
         self.qButton = tk.Button(self.frameButtons, text="Quit", command=master.destroy)
-        self.qButton.pack()
+        self.qButton.pack(side='left')
 
         #set up vlc video player
         self.vlcInstance = vlc.Instance()
@@ -93,25 +96,25 @@ class slideShowClass:
         self.vlcPlayer.set_xwindow(self.frameVid.winfo_id())   #connect vlc to tk
         #self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:myPlay(self.vlcPlayer))
         self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:self.playVid())
-        self.pButton.pack()
+        self.pButton.pack(side='right')
 
-        self.textbox = tk.Entry(self.frameButtons)
+        self.textbox = tk.Entry(self.frameButtons, width=int(self.width/10))
         self.textbox.focus()
         self.textbox.bind("<Return>", self.send_tags)
         self.textbox.bind("<Control-Key-w>", self.show_stop)
         self.textbox.bind("<Control-Key-p>", self.playVid)
         self.textbox.bind("<Up>", self.input_hist_prev)
         self.textbox.bind("<Down>", self.input_hist_next)
-        self.textbox.pack(side='bottom', fill='x', expand=True)
+        self.textbox.pack(side='top', fill='x', expand=True)
+
+        #Tooltip Hover Text
+        #self.pTip = tk.tix.Balloon(master)
+        #self.pTip.bind_widget(self.pButton, balloonmsg="Ctrl-p")
+        #self.qTip = tk.tix.Balloon(master)
+        #self.qTip.bind_widget(self.qButton, balloonmsg="Ctrl-w")
 
         while not self.setup_next_input():
             print(self.data['path'][self.currentImageIndex], "has been skipped!")
-
-        if self.showOrImport == 'import':
-            pass
-        else:
-            print("Non-Import Currently Disabled!")
-            self.master.quit()  #this doesn't actually end the program... why?
 
     def input_hist_prev(self, event=None):
         self.currentInputIndex -= 1
@@ -252,7 +255,7 @@ class slideShowClass:
                     os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
                     return False
         if self.data[self.currentImageIndex]["assessment"] == "Image":
-            self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((600,400), Image.ANTIALIAS)
+            self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((self.width,self.height), Image.ANTIALIAS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
             self.showpanel.config(image = self.currentTkImage)
             self.frameImg.tkraise()

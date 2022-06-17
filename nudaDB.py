@@ -20,7 +20,7 @@
 import sys, os
 import tkinter as tk
 import pickle
-import slideShowClass as ssc
+import importClass as imp 
 
 if sys.argv[1] == "init":
     print("Initializing nudaDB into "+os.getcwd())
@@ -29,9 +29,9 @@ if sys.argv[1] == "init":
     os.system("mkdir ./search/")
     os.system("mkdir ./inbox/imported/")
     os.system("mkdir ./inbox/skipped/")
-    if not os.path.exists(ssc.NUDADBTABLE):
-        print("Creating "+ssc.NUDADBTABLE)
-        with open(ssc.NUDADBTABLE, 'w') as table:
+    if not os.path.exists(imp.NUDADBTABLE):
+        print("Creating "+imp.NUDADBTABLE)
+        with open(imp.NUDADBTABLE, 'w') as table:
             table.write("#filename\tpath\tdate\ttime\ttags\n")
 
 if sys.argv[1] == "install":
@@ -41,9 +41,9 @@ if sys.argv[1] == "install":
     os.system("mkdir ./search/")
     os.system("mkdir ./inbox/imported/")
     os.system("mkdir ./inbox/skipped/")
-    if not os.path.exists(ssc.NUDADBTABLE):
-        print("Creating "+ssc.NUDADBTABLE)
-        with open(ssc.NUDADBTABLE, 'w') as table:
+    if not os.path.exists(imp.NUDADBTABLE):
+        print("Creating "+imp.NUDADBTABLE)
+        with open(imp.NUDADBTABLE, 'w') as table:
             table.write("#filename\tpath\tdate\ttime\ttags\n")
     if len(sys.argv) > 2:
         if sys.argv[2] == "-f":
@@ -53,7 +53,7 @@ if sys.argv[1] == "install":
         os.system("sudo ln -s "+os.getcwd()+"/nudaDB.py /bin/nuda")
 
 else:
-    if os.path.exists(ssc.NUDADBDIR) and os.path.exists(ssc.NUDADBTABLE):
+    if os.path.exists(imp.NUDADBDIR) and os.path.exists(imp.NUDADBTABLE):
         pass
     else:
         print("Current directory, "+os.getcwd()+", is not initialized as a nudaDB home directory.")
@@ -62,7 +62,7 @@ else:
 
 if sys.argv[1] == "tags":
     tagDict = {}
-    with open(ssc.NUDADBTABLE, 'r') as table:
+    with open(imp.NUDADBTABLE, 'r') as table:
         for line in table:
             if line[0] == '#':
                 continue
@@ -80,26 +80,27 @@ if sys.argv[1] == "tags":
 if sys.argv[1] == "search":
     tagList = sys.argv[2:]
     print('Searching for tag: ',tagList)
-    imageList = ssc.getImagesMatchingTags(tagList)
-    os.system("rm "+ssc.NUDADBDIR+"../search/*")
+    imageList = imp.getImagesMatchingTags(tagList)
+    os.system("rm "+imp.NUDADBDIR+"../search/*")
     for result in imageList:
         filename = result.split('/')[-1]
-        os.system("ln "+ssc.NUDADBDIR+"../"+result+" "+ssc.NUDADBDIR+"../search/"+filename)
-        with open(ssc.NUDADBTABLE, 'r') as dbfile:
+        os.system("ln "+imp.NUDADBDIR+"../"+result+" "+imp.NUDADBDIR+"../search/"+filename)
+        with open(imp.NUDADBTABLE, 'r') as dbfile:
             for line in dbfile:
                 if line[:len(filename)] == filename:
                     print(line.rstrip())
 
 if sys.argv[1] == "slideshow":
-    tagList = sys.argv[2:]
-    print('Starting slideshow with tags: ',tagList)
-    imageList = ssc.getImagesMatchingTags(tagList)
-
-    #initialize tk window
-    slideshow = tk.Tk()
-    slideshow.attributes('-type','dialog')
-    my_slideshow = ssc.slideShowClass(slideshow, imageList, 'show')
-    slideshow.mainloop()
+    print("slideshow feature is disabled pending refactor")
+#    tagList = sys.argv[2:]
+#    print('Starting slideshow with tags: ',tagList)
+#    imageList = imp.getImagesMatchingTags(tagList)
+#
+#    #initialize tk window
+#    slideshow = tk.Tk()
+#    slideshow.attributes('-type','dialog')
+#    my_slideshow = imp.importClass(slideshow, imageList, 'show')
+#    slideshow.mainloop()
 
 if sys.argv[1] == "reset":
     try:
@@ -118,10 +119,10 @@ if sys.argv[1] == "reset":
             os.system("rm ./nudaDBDir/*/*")
             os.system("rmdir ./nudaDBDir/*")
             print("Wiping nudaDBTable.txt")
-            os.system("rm "+ssc.NUDADBTABLE)
-            if not os.path.exists(ssc.NUDADBTABLE):
-                print("Creating "+ssc.NUDADBTABLE)
-                with open(ssc.NUDADBTABLE, 'w') as table:
+            os.system("rm "+imp.NUDADBTABLE)
+            if not os.path.exists(imp.NUDADBTABLE):
+                print("Creating "+imp.NUDADBTABLE)
+                with open(imp.NUDADBTABLE, 'w') as table:
                     table.write("#filename\tpath\tdate\ttime\ttags\n")
 
 if sys.argv[1] == "import":
@@ -129,8 +130,8 @@ if sys.argv[1] == "import":
         inFileNames = ['./inbox/'+f for f in os.listdir(os.getcwd()+'/inbox/') if os.path.isfile(os.getcwd()+'/inbox/'+f)]
     else:
         inFileNames = sys.argv[2:]
-    importImage = tk.Tk()
-    importImage.attributes('-type','dialog')
-    my_importImage = ssc.slideShowClass(importImage, inFileNames, 'import')
-    importImage.mainloop()
+    importGUI = tk.Tk()
+    importGUI.attributes('-type','dialog')
+    my_importGUI = imp.importClass(importGUI, inFileNames)
+    importGUI.mainloop()
 
