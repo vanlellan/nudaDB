@@ -14,11 +14,17 @@ def getRandomTags(aNum):
 def getImagesMatchingTags(listOfTags):
     with open("../tags.pickle","rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
-    imagelist = []
+    aImageList = []
     for tag in listOfTags:
         for result in tagDict[tag]:
-            imagelist.append(result)
-    return imagelist
+            ext = result.split('.')[-1]
+            if result in tagDict['image']:
+                aImageList.append((result,'image',ext))
+            elif result in tagDict['video']:
+                aImageList.append((result,'video',ext))
+            else:
+                aImageList.append((result,'other',ext))
+    return aImageList
 
 DB_FOLDER = os.path.join('static','nudaDBDir')
 
@@ -35,12 +41,12 @@ def home():
 @app.route('/<keyword>')
 @app.route('/<keyword>/<int:page>')
 def search(keyword,page=None):
-    imageList = [f[12:] for f in getImagesMatchingTags(keyword.split('-'))]
+    imageList = [(f[0][12:],f[1],f[2]) for f in getImagesMatchingTags(keyword.split('-'))]
     if page is None:
         page = 1
-        full_filenames = [os.path.join(app.config['DB_FOLDER'], f) for f in imageList[numImages*(page-1):numImages*page]]
+        full_filenames = [(os.path.join(app.config['DB_FOLDER'], f[0]),f[1],f[2]) for f in imageList[numImages*(page-1):numImages*page]]
     else:
-        full_filenames = [os.path.join("..", app.config['DB_FOLDER'], f) for f in imageList[numImages*(page-1):numImages*page]]
+        full_filenames = [(os.path.join("..", app.config['DB_FOLDER'], f[0]),f[1],f[2]) for f in imageList[numImages*(page-1):numImages*page]]
     print(full_filenames)
     return render_template("search.html", images = full_filenames, keyword = keyword, prevthisnext = [page-1, page, page+1], randTags = getRandomTags(10))
 

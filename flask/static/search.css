@@ -1,4 +1,9 @@
 
+video{
+	width: 25vw;
+	height: auto;
+}
+
 img{
 	border: 1px solid #ddd; /* gray border */
 	border-radius: 4px; /* rounded border */

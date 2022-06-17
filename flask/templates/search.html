@@ -20,9 +20,16 @@
 	<br />
 	<div class="row">
 		{% for image in images %}
-			<a target="_blank" href="{{ image }}">
-				<img src="{{ image }}" alt="Image">
-			</a>
+			{% if image[1] == 'image' %}
+				<a target="_blank" href="{{ image[0] }}">
+					<img src="{{ image[0] }}" alt="Image">
+				</a>
+			{% elif image[1] == 'video' %}
+				{% set typeString = "video/"+image[2] %}
+				<video controls>
+					<source src="{{ image[0] }}" type="{{ typeString }}">
+				</video>
+			{% endif %}
 		{% endfor %}
 	</div>
 	<br />
