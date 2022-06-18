@@ -66,7 +66,7 @@ class importClass:
 
         self.width = 1200
         self.height = 800
-        self.boxHeight = 30
+        self.boxHeight = 50
 
         master.title("Nuda Import")
         #master.geometry(str(round(0.9*master.winfo_screenwidth()))+'x'+str(round(0.9*master.winfo_screenheight())))
@@ -98,6 +98,7 @@ class importClass:
         self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:self.playVid())
         self.pButton.pack(side='right')
 
+        #tag input textbox
         self.textbox = tk.Entry(self.frameButtons, width=int(self.width/10))
         self.textbox.focus()
         self.textbox.bind("<Return>", self.send_tags)
@@ -106,6 +107,12 @@ class importClass:
         self.textbox.bind("<Up>", self.input_hist_prev)
         self.textbox.bind("<Down>", self.input_hist_next)
         self.textbox.pack(side='top', fill='x', expand=True)
+
+        #Editable datetime textbox
+        self.datebox = tk.Entry(self.frameButtons, width=int(self.width/10))
+        self.datebox.bind("<Return>", self.send_tags)
+        self.datebox.bind("<Control-Key-w>", self.show_stop)
+        self.datebox.pack(side='top', fill='x', expand=True)
 
         #Tooltip Hover Text
         #self.pTip = tk.tix.Balloon(master)
@@ -133,6 +140,28 @@ class importClass:
             self.currentInputIndex = 0
             self.textbox.delete(0, tk.END)
 
+    def createTargetDir(self, event=None):
+        self.month = MONTHS[self.data[self.currentImageIndex]["datetime"].month-1]
+        self.year = str(self.data[self.currentImageIndex]["datetime"].year)
+        dirContents = os.listdir(NUDADBDIR)
+        dirCheck = NUDADBDIR+self.month+self.year
+        if self.month+self.year in dirContents:
+            pass
+        else:
+            print("Creating "+dirCheck)
+            os.system("mkdir "+dirCheck)
+
+    def checkForCollisions(self, event=None):
+        monthContents = os.listdir(NUDADBDIR+self.month+self.year)
+        fullHash = getHash(self.data[self.currentImageIndex]["fullpath"])
+        self.newName = fullHash[-6:]+'.'+self.data[self.currentImageIndex]["extension"]
+        if self.newName in monthContents:
+            print("COLLISION!     Skipping...")
+            #if using default import, move file from ./inbox/ to ./inbox/skipped/
+            if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
+                os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
+                return True
+
     def playVid(self, event=None):
         self.vlcPlayer.set_media(self.vlcPlayer.get_media())
         self.vlcPlayer.play()
@@ -141,6 +170,19 @@ class importClass:
         self.master.quit()
 
     def send_tags(self, event=None):
+        #update datetime from datebox
+        newDateTime = self.datebox.get()
+        try:
+            self.data[self.currentImageIndex]["datetime"] = datetime.datetime.strptime(newDateTime, "%Y:%m:%d %H:%M:%S")
+        except Exception as ex:
+            print("ERROR: Can't load new datetime, check format?")
+            print(ex)
+            return False
+        self.createTargetDir()
+        #check for collisions
+        if self.checkForCollisions() is True:
+            self.setupNextInput()
+            return False
         #write table entry and import file
         self.newTags = self.textbox.get()
         if self.newTags in ['\\quit', '\\exit', '\\abort']:
@@ -234,26 +276,13 @@ class importClass:
             print("DEBUG: ALL DONE")
             return True
         if self.data[self.currentImageIndex]["assessment"] is not None:
-            #check target DIR
-            self.month = MONTHS[self.data[self.currentImageIndex]["datetime"].month-1]
-            self.year = str(self.data[self.currentImageIndex]["datetime"].year)
-            dirContents = os.listdir(NUDADBDIR)
-            dirCheck = NUDADBDIR+self.month+self.year
-            if self.month+self.year in dirContents:
-                pass
-            else:
-                print("Creating "+dirCheck)
-                os.system("mkdir "+dirCheck)
+            self.createTargetDir()
             #check for collisions
-            monthContents = os.listdir(NUDADBDIR+self.month+self.year)
-            fullHash = getHash(self.data[self.currentImageIndex]["fullpath"])
-            self.newName = fullHash[-6:]+'.'+self.data[self.currentImageIndex]["extension"]
-            if self.newName in monthContents:
-                print("COLLISION!     Skipping...")
-                #if using default import, move file from ./inbox/ to ./inbox/skipped/
-                if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
-                    os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/")
-                    return False
+            if self.checkForCollisions() is True:
+                return False
+        #fill datebox with current datetime info
+        self.datebox.delete(0, tk.END)
+        self.datebox.insert(0, self.data[self.currentImageIndex]["datetime"].strftime("%Y:%m:%d %H:%M:%S"))
         if self.data[self.currentImageIndex]["assessment"] == "image":
             self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((self.width,self.height), Image.ANTIALIAS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
