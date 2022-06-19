@@ -46,7 +46,8 @@ TODO
 [ ] add feature: GUI command to edit tags during slideshow
 [X] add ability to import video, use vlc embedded in tk window
 [ ] ability to gracefully merge two DBs (merge, import, push, pull... choose best word for command)
-[ ] add another tkEntry, which is auto-filled with the datetime info, this can be modified by the user, and then send_tags uses it
+[X] add another tkEntry, which is auto-filled with the datetime info, this can be modified by the user, and then send_tags uses it
+[ ] add ability to deliberately skip, or even delete, a file during import (button, ctrl-key, and/or command tag)
 
 Ideas
 [ ] change name to 'fresco'
