@@ -11,7 +11,7 @@ def getRandomTags(aNum):
         randKeys = random.sample(allKeys, aNum)
         return randKeys
 
-def getImagesMatchingTags(listOfTags):
+def getImagesMatchingAnyTags(listOfTags):
     with open("../tags.pickle","rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
     aImageList = []
@@ -25,6 +25,28 @@ def getImagesMatchingTags(listOfTags):
             else:
                 aImageList.append((result,'other',ext))
     return aImageList
+
+def getFilesMatchingAllTags(listOfTags):
+    with open("../tags.pickle","rb") as pickleFile:
+        tagDict = pickle.load(pickleFile)
+    aFileList = []
+    outputList = []
+    #get all files matching first tag
+    for result in tagDict[listOfTags[0]]:
+        aFileList.append(result)
+    #loop through other tags, keeping only files which match
+    for tag in listOfTags[1:]:
+        aFileList = [f for f in aFileList if f in tagDict[tag]]
+    #loop through final list, sorting image, video, and other, and specifying ext
+    for result in aFileList:
+        ext = result.split('.')[-1]
+        if result in tagDict['image']:
+            outputList.append((result,'image',ext))
+        elif result in tagDict['video']:
+            outputList.append((result,'video',ext))
+        else:
+            outputlist.append((result,'other',ext))
+    return outputList
 
 DB_FOLDER = os.path.join('static','nudaDBDir')
 

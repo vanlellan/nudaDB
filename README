@@ -48,6 +48,8 @@ TODO
 [ ] ability to gracefully merge two DBs (merge, import, push, pull... choose best word for command)
 [X] add another tkEntry, which is auto-filled with the datetime info, this can be modified by the user, and then send_tags uses it
 [ ] add ability to deliberately skip, or even delete, a file during import (button, ctrl-key, and/or command tag)
+[ ] add 2nd pickle file, in which keys are filenames and values are lists of tags
+[ ] add list of tags to flask page, either as captions under each image or as hover text
 
 Ideas
 [ ] change name to 'fresco'
