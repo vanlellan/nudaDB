@@ -8,7 +8,7 @@ def getRandomTags(aNum):
     with open("../tags.pickle","rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
         allKeys = tagDict.keys() 
-        randKeys = random.sample(allKeys, aNum)
+        randKeys = random.sample(allKeys, min(aNum,len(allKeys)))
         return randKeys
 
 def getImagesMatchingAnyTags(listOfTags):
@@ -63,7 +63,7 @@ def home():
 @app.route('/<keyword>')
 @app.route('/<keyword>/<int:page>')
 def search(keyword,page=None):
-    imageList = [(f[0][12:],f[1],f[2]) for f in getImagesMatchingTags(keyword.split('-'))]
+    imageList = [(f[0][12:],f[1],f[2]) for f in getFilesMatchingAllTags(keyword.split('-'))]
     if page is None:
         page = 1
         full_filenames = [(os.path.join(app.config['DB_FOLDER'], f[0]),f[1],f[2]) for f in imageList[numImages*(page-1):numImages*page]]

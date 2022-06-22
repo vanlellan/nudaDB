@@ -28,7 +28,8 @@ import subprocess
 
 NUDADBDIR = os.getcwd()+'/nudaDBDir/'
 NUDADBTABLE = os.getcwd()+'/nudaDBTable.txt'
-MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+MONTHS = ['jan','february','march','april','may','june','july','august','september','october','november','december']
 
 def getHash(thefile):
     BLOCKSIZE = 65536
@@ -40,14 +41,14 @@ def getHash(thefile):
             buf = afile.read(BLOCKSIZE)
     return hasher.hexdigest()
 
-def getImagesMatchingTags(listOfTags):
-    with open("tags.pickle","rb") as pickleFile:
-        tagDict = pickle.load(pickleFile)
-    imagelist = []
-    for tag in listOfTags:
-        for result in tagDict[tag]:
-            imagelist.append(result)
-    return imagelist
+#def getImagesMatchingTags(listOfTags):
+#    with open("tags.pickle","rb") as pickleFile:
+#        tagDict = pickle.load(pickleFile)
+#    imagelist = []
+#    for tag in listOfTags:
+#        for result in tagDict[tag]:
+#            imagelist.append(result)
+#    return imagelist
 
 def myPlay(aPlayer):
     aPlayer.set_media(aPlayer.get_media())
@@ -141,18 +142,19 @@ class importClass:
             self.textbox.delete(0, tk.END)
 
     def createTargetDir(self, event=None):
-        self.month = MONTHS[self.data[self.currentImageIndex]["datetime"].month-1]
+        #self.month = MONTHS[self.data[self.currentImageIndex]["datetime"].month-1]
+        self.month = str(self.data[self.currentImageIndex]["datetime"].month).zfill(2)
         self.year = str(self.data[self.currentImageIndex]["datetime"].year)
         dirContents = os.listdir(NUDADBDIR)
-        dirCheck = NUDADBDIR+self.month+self.year
-        if self.month+self.year in dirContents:
+        dirCheck = NUDADBDIR+self.year+'-'+self.month
+        if self.year+'-'+self.month in dirContents:
             pass
         else:
             print("Creating "+dirCheck)
             os.system("mkdir "+dirCheck)
 
     def checkForCollisions(self, event=None):
-        monthContents = os.listdir(NUDADBDIR+self.month+self.year)
+        monthContents = os.listdir(NUDADBDIR+self.year+'-'+self.month)
         fullHash = getHash(self.data[self.currentImageIndex]["fullpath"])
         self.newName = fullHash[-6:]+'.'+self.data[self.currentImageIndex]["extension"]
         if self.newName in monthContents:
@@ -191,12 +193,15 @@ class importClass:
         else:
             self.input_strings.append(self.newTags)
         taglist = self.newTags.split(' ')
-        tags = ','.join(taglist)+','+self.data[self.currentImageIndex]["assessment"]
+        taglist.append(self.data[self.currentImageIndex]["assessment"])
+        taglist.insert(0,MONTHS[int(self.month)-1])
+        taglist.insert(0,self.year)
+        tags = ','.join(taglist)
         try:
-            os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.month+self.year+'/'+self.newName)
+            os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.year+'-'+self.month+'/'+self.newName)
             #Add entry to table
             with open(NUDADBTABLE, 'a') as table:
-                table.write(self.newName+'\t'+'./nudaDBDir/'+self.month+self.year+'/'+'\t'+self.data[self.currentImageIndex]["datetime"].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
+                table.write(self.newName+'\t'+'./nudaDBDir/'+self.year+'-'+self.month+'/'+'\t'+self.data[self.currentImageIndex]["datetime"].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
             #if using default import, move file from ./inbox/ to ./inbox/imported/
             if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
                 os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/")
