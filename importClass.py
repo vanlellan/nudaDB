@@ -67,7 +67,7 @@ class importClass:
 
         self.width = 1200
         self.height = 800
-        self.boxHeight = 60
+        self.boxHeight = 65
 
         master.title("Nuda Import")
         #master.geometry(str(round(0.9*master.winfo_screenwidth()))+'x'+str(round(0.9*master.winfo_screenheight())))
@@ -293,7 +293,7 @@ class importClass:
         #fill datebox with current datetime info
         self.datebox.delete(0, tk.END)
         self.datebox.insert(0, self.data[self.currentImageIndex]["datetime"].strftime("%Y:%m:%d %H:%M:%S"))
-        self.label.config(text="Imporing File: "+self.data[self.currentImageIndex]["filename"])
+        self.label.config(text="Importing File: "+self.data[self.currentImageIndex]["filename"])
         if self.data[self.currentImageIndex]["assessment"] == "image":
             self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((self.width,self.height), Image.ANTIALIAS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
