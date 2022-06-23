@@ -67,7 +67,7 @@ class importClass:
 
         self.width = 1200
         self.height = 800
-        self.boxHeight = 50
+        self.boxHeight = 60
 
         master.title("Nuda Import")
         #master.geometry(str(round(0.9*master.winfo_screenwidth()))+'x'+str(round(0.9*master.winfo_screenheight())))
@@ -98,6 +98,10 @@ class importClass:
         #self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:myPlay(self.vlcPlayer))
         self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:self.playVid())
         self.pButton.pack(side='right')
+
+        #current file Label
+        self.label = tk.Label(self.frameButtons, text="Importing File: ???")
+        self.label.pack(side='top')
 
         #tag input textbox
         self.textbox = tk.Entry(self.frameButtons, width=int(self.width/10))
@@ -172,6 +176,7 @@ class importClass:
         self.master.quit()
 
     def send_tags(self, event=None):
+        self.vlcPlayer.stop()
         #update datetime from datebox
         newDateTime = self.datebox.get()
         try:
@@ -288,6 +293,7 @@ class importClass:
         #fill datebox with current datetime info
         self.datebox.delete(0, tk.END)
         self.datebox.insert(0, self.data[self.currentImageIndex]["datetime"].strftime("%Y:%m:%d %H:%M:%S"))
+        self.label.config(text="Imporing File: "+self.data[self.currentImageIndex]["filename"])
         if self.data[self.currentImageIndex]["assessment"] == "image":
             self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((self.width,self.height), Image.ANTIALIAS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
