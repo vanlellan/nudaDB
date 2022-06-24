@@ -203,13 +203,13 @@ class importClass:
         taglist.insert(0,self.year)
         tags = ','.join(taglist)
         try:
-            os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.year+'-'+self.month+'/'+self.newName)
+            os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.year+'-'+self.month+'/'+self.newName)
             #Add entry to table
             with open(NUDADBTABLE, 'a') as table:
                 table.write(self.newName+'\t'+'./nudaDBDir/'+self.year+'-'+self.month+'/'+'\t'+self.data[self.currentImageIndex]["datetime"].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
             #if using default import, move file from ./inbox/ to ./inbox/imported/
-            if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
-                os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/")
+            #if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
+            #    os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/")
         except Exception as ex:
             print("copy problem!")
             print(ex)
