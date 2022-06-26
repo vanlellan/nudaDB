@@ -96,7 +96,7 @@ class importClass:
         self.vlcPlayer = self.vlcInstance.media_player_new()
         self.vlcPlayer.set_xwindow(self.frameVid.winfo_id())   #connect vlc to tk
         #self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:myPlay(self.vlcPlayer))
-        self.pButton = tk.Button(self.frameButtons, text="Play", command=lambda:self.playVid())
+        self.pButton = tk.Button(self.frameButtons, text="Restart", command=lambda:self.playVid())
         self.pButton.pack(side='right')
 
         #current file Label
@@ -108,7 +108,7 @@ class importClass:
         self.textbox.focus()
         self.textbox.bind("<Return>", self.send_tags)
         self.textbox.bind("<Control-Key-w>", self.show_stop)
-        self.textbox.bind("<Control-Key-p>", self.playVid)
+        self.textbox.bind("<Control-Key-p>", self.togglePlay)
         self.textbox.bind("<Up>", self.input_hist_prev)
         self.textbox.bind("<Down>", self.input_hist_next)
         self.textbox.pack(side='top', fill='x', expand=True)
@@ -171,6 +171,12 @@ class importClass:
     def playVid(self, event=None):
         self.vlcPlayer.set_media(self.vlcPlayer.get_media())
         self.vlcPlayer.play()
+
+    def togglePlay(self, event=None):
+        if self.vlcPlayer.is_playing():
+            self.vlcPlayer.pause()
+        else:
+            self.vlcPlayer.play()
 
     def show_stop(self, event):
         self.master.quit()
