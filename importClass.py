@@ -213,7 +213,8 @@ class importClass:
         taglist.insert(0,self.year)
         tags = ','.join(taglist)
         try:
-            if using default import, move file from ./inbox/, otherwise copy file
+            #if using default import, move file from ./inbox/, otherwise copy file
+            if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
                 os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.year+'-'+self.month+'/'+self.newName)
             else:
                 os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.year+'-'+self.month+'/'+self.newName)
