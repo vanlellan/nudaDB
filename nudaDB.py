@@ -110,7 +110,6 @@ if sys.argv[1] == "reset":
     try:
         value = os.environ['ALLOWNUDARESET']
     except:
-        print("nuda reset disabled!")
         value = "False"
     if value == 'True':
         yesorno = input("Really reset the entire DB? ")
@@ -128,6 +127,8 @@ if sys.argv[1] == "reset":
                 print("Creating "+imp.NUDADBTABLE)
                 with open(imp.NUDADBTABLE, 'w') as table:
                     table.write("#filename\tpath\tdate\ttime\ttags\n")
+    else:
+        print("nuda reset disabled!")
 
 if sys.argv[1] == "import":
     if len(sys.argv) == 2:
