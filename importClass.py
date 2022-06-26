@@ -109,6 +109,7 @@ class importClass:
         self.textbox.bind("<Return>", self.send_tags)
         self.textbox.bind("<Control-Key-w>", self.show_stop)
         self.textbox.bind("<Control-Key-p>", self.togglePlay)
+        self.textbox.bind("<Control-Key-0>", self.volumeMax)
         self.textbox.bind("<Up>", self.input_hist_prev)
         self.textbox.bind("<Down>", self.input_hist_next)
         self.textbox.pack(side='top', fill='x', expand=True)
@@ -178,6 +179,9 @@ class importClass:
         else:
             self.vlcPlayer.play()
 
+    def volumeMax(self, event=None):
+        self.vlcPlayer.audio_set_volume(100)
+
     def show_stop(self, event):
         self.master.quit()
 
@@ -209,13 +213,13 @@ class importClass:
         taglist.insert(0,self.year)
         tags = ','.join(taglist)
         try:
-            os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.year+'-'+self.month+'/'+self.newName)
+            if using default import, move file from ./inbox/, otherwise copy file
+                os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.year+'-'+self.month+'/'+self.newName)
+            else:
+                os.system("cp "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+self.year+'-'+self.month+'/'+self.newName)
             #Add entry to table
             with open(NUDADBTABLE, 'a') as table:
                 table.write(self.newName+'\t'+'./nudaDBDir/'+self.year+'-'+self.month+'/'+'\t'+self.data[self.currentImageIndex]["datetime"].strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
-            #if using default import, move file from ./inbox/ to ./inbox/imported/
-            #if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
-            #    os.system("mv "+self.data[self.currentImageIndex]["fullpath"].replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/")
         except Exception as ex:
             print("copy problem!")
             print(ex)
