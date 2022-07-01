@@ -29,7 +29,7 @@ import subprocess
 NUDADBDIR = os.getcwd()+'/nudaDBDir/'
 NUDADBTABLE = os.getcwd()+'/nudaDBTable.txt'
 MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
-MONTHS = ['jan','february','march','april','may','june','july','august','september','october','november','december']
+MONTHS = ['january','february','march','april','may','june','july','august','september','october','november','december']
 
 def getHash(thefile):
     BLOCKSIZE = 65536
