@@ -6,13 +6,13 @@
 </head>
 <body>
 	<div>
-	<a href="https://flask.vanlellan.net/{{ keyword }}/{{ prevthisnext[0] }}">Prev Page</a>
-	<a href="https://flask.vanlellan.net/{{ keyword }}/{{ prevthisnext[2] }}">Next Page</a>
+	<a href="/{{ keyword }}/{{ prevthisnext[0] }}">Prev Page</a>
+	<a href="/{{ keyword }}/{{ prevthisnext[2] }}">Next Page</a>
 	</div>
 	<div style="float: right;">
 		Random Tags:
 		{% for tag in randTags %}
-		<a href="https://flask.vanlellan.net/{{ tag }}">{{ tag }}</a>
+		<a href="/{{ tag }}">{{ tag }}</a>
 		{% endfor %}
 	</div>
 	<br />
