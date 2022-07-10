@@ -58,7 +58,7 @@ numImages = 8
 @app.route('/')
 def home():
     #dummy home page
-    return "APPEND your keyword to the address (slash delimited) to begin your Search!"
+    return "APPEND your keywords to the address (dash delimited) to begin your Search! e.g. www.hostname.net/birthday-party to search for 'birthday' AND 'party'."
 
 @app.route('/<keyword>')
 @app.route('/<keyword>/<int:page>')
