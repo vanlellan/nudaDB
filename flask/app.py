@@ -53,7 +53,7 @@ DB_FOLDER = os.path.join('static','nudaDBDir')
 app = Flask(__name__, template_folder="templates")
 app.config['DB_FOLDER'] = DB_FOLDER
 
-numImages = 8
+numImages = 9
 
 @app.route('/')
 def home():
