@@ -127,7 +127,7 @@ class importClass:
         #self.qTip.bind_widget(self.qButton, balloonmsg="Ctrl-w")
 
         while not self.setup_next_input():
-            print(self.data['path'][self.currentImageIndex], "has been skipped!")
+            print(self.data[self.currentImageIndex]['path'], "has been skipped!")
 
     def input_hist_prev(self, event=None):
         self.currentInputIndex -= 1
