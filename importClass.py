@@ -207,6 +207,7 @@ class importClass:
             return None
         else:
             self.input_strings.append(self.newTags)
+            self.currentInputIndex += 1
         taglist = self.newTags.split(' ')
         taglist.append(self.data[self.currentImageIndex]["assessment"])
         taglist.insert(0,MONTHS[int(self.month)-1])
