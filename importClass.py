@@ -252,7 +252,7 @@ class importClass:
                 print(ex)
         #check the rest to see if they have known video format extensions
             if d["assessment"] is None:
-                if d["extension"] in ["mp4","avi","AVI","3g2","MPG","mpg","wmv","MOV"]:
+                if d["extension"] in ["MP4","mp4","avi","AVI","3g2","MPG","mpg","wmv","MOV"]:
                     d["assessment"] = "video"
         #get EXIF date and time for files assessed as images
         for d in self.data:
