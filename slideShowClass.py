@@ -90,7 +90,8 @@ class slideShowClass:
         self.currentImageOriginal = None
         self.fullscreenState = True
 
-        self.sortImageListByTimeStamp()
+        #self.sortImageListByTimeStamp()
+        self.sortImageListByShuffle()
 
         master.title("Slide Show")
         master.geometry(str(round(0.9*master.winfo_screenwidth()))+'x'+str(round(0.9*master.winfo_screenheight())))
@@ -113,6 +114,9 @@ class slideShowClass:
         self.textbox.pack(side='bottom', fill='x', expand=True)
 
         self.show_next()
+
+    def sortImageListByShuffle(self, event=None):
+        random.shuffle(self.listOfImagePaths)
 
     def sortImageListByTimeStamp(self, event=None):
         idummy = 1
