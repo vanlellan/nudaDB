@@ -98,7 +98,7 @@ if sys.argv[1] == "search":
 if sys.argv[1] == "slideshow":
     tagList = sys.argv[2:]
     print('Starting slideshow with tags: ',tagList)
-    imageList = ssc.getImagesMatchingTags(tagList)
+    imageList = ssc.getFilesMatchingAllTags(tagList)
 
     #initialize tk window
     slideshow = tk.Tk()

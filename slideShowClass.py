@@ -40,6 +40,32 @@ NUDADBDIR = os.getcwd() + '/nudaDBDir/'                            #this gets th
 NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+def getFilesMatchingAllTags(listOfTags):
+    #SLIDESHOW VERSION, RETURN LIST OF STRINGS, NOT LIST OF TUPLES
+    #HARDCODE RETURN ONLY IMAGES
+    listOfTags.append("image")
+    with open("./tags.pickle","rb") as pickleFile:
+        tagDict = pickle.load(pickleFile)
+    aFileList = []
+    outputList = []
+    #get all files matching first tag
+    for result in tagDict[listOfTags[0]]:
+        aFileList.append(result)
+    #loop through other tags, keeping only files which match
+    for tag in listOfTags[1:]:
+        aFileList = [f for f in aFileList if f in tagDict[tag]]
+    #loop through final list, sorting image, video, and other, and specifying ext
+    #for result in aFileList:
+    #    ext = result.split('.')[-1]
+    #    if result in tagDict['image']:
+    #        outputList.append((result,'image',ext))
+    #    elif result in tagDict['video']:
+    #        outputList.append((result,'video',ext))
+    #    else:
+    #        outputlist.append((result,'other',ext))
+    print("DEBUG: aFileList:", aFileList)
+    return aFileList
+
 def getImagesMatchingTags(listOfTags):
     with open("tags.pickle","rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
@@ -90,7 +116,7 @@ class slideShowClass:
 
     def sortImageListByTimeStamp(self, event=None):
         idummy = 1
-        tempList = list(self.listOfImagePaths)
+        tempList = self.listOfImagePaths
         stamps = []
         for impath in tempList:
             aImage = Image.open(impath)
@@ -116,9 +142,12 @@ class slideShowClass:
 
     def new_search(self, event=None):
         newTags = self.textbox.get()
+        if newTags in ['\\quit', '\\exit', '\\abort']:
+            self.master.quit()
+            return None
         self.input_strings.append(newTags)
         taglist = self.input_strings[-1].split(' ')
-        self.listOfImagePaths = getImagesMatchingTags(taglist)
+        self.listOfImagePaths = getFilesMatchingAllTags(taglist)
         self.currentImageIndex = -1
         self.show_next()
         self.currentInputIndex = 0
@@ -158,10 +187,6 @@ class slideShowClass:
         self.currentImageIndex += 1
         if self.currentImageIndex >= len(self.listOfImagePaths):
             self.currentImageIndex = 0
-            else:
-                print("Something has gone very wrong...")
-                self.master.quit()
-                return False
         try:
             tempFileName = self.listOfImagePaths[self.currentImageIndex]
             testOpen = Image.open(tempFileName)
