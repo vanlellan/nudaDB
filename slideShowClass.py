@@ -24,6 +24,8 @@ import datetime
 import pickle
 import random
 
+#Updating to do resurrect slideshow only -- REM -- 2022-11-16
+
 #TODO
 #    Make this class general enough to use for both import and slideshow
     #for import, text input bar sets tags for the current image
@@ -48,10 +50,10 @@ def getImagesMatchingTags(listOfTags):
     return imagelist
 
 class slideShowClass:
-    def __init__(self,master,listOfImagePaths,showOrImport):
+    #def __init__(self,master,listOfImagePaths,showOrImport):
+    def __init__(self,master,listOfImagePaths):
         self.master = master
         self.listOfImagePaths = listOfImagePaths
-        self.showOrImport = showOrImport
         self.input_strings = []
         self.currentInputIndex = 0
         self.afterID = None
@@ -74,26 +76,17 @@ class slideShowClass:
 
         self.textbox = tk.Entry(master)
         self.textbox.focus()
-        if self.showOrImport == 'show':
-            self.textbox.bind("<Return>", self.new_search)
-            self.textbox.bind("<Next>", self.show_next)    #Page Down
-            #self.textbox.bind("<Prior>", self.show_prior)    #Page Up
-            self.textbox.bind("<Up>", self.input_hist_prev)
-            self.textbox.bind("<Down>", self.input_hist_next)
-        elif self.showOrImport == 'import':
-            self.textbox.bind("<Return>", self.send_tags)
-            self.textbox.bind("<Up>", self.input_hist_prev)
-            self.textbox.bind("<Down>", self.input_hist_next)
+        self.textbox.bind("<Return>", self.new_search)
+        self.textbox.bind("<Next>", self.show_next)    #Page Down
+        #self.textbox.bind("<Prior>", self.show_prior)    #Page Up
+        self.textbox.bind("<Up>", self.input_hist_prev)
+        self.textbox.bind("<Down>", self.input_hist_next)
         self.textbox.bind("<Control-Key-w>", self.show_stop)
         self.textbox.bind("<Escape>", self.fullscreen_off)
         self.textbox.bind("<F11>", self.toggle_fullscreen)
         self.textbox.pack(side='bottom', fill='x', expand=True)
 
-        if self.showOrImport == 'show':
-            self.show_next()
-        elif self.showOrImport == 'import':
-            if self.next_image():
-                self.tag_input()
+        self.show_next()
 
     def sortImageListByTimeStamp(self, event=None):
         idummy = 1
@@ -158,88 +151,13 @@ class slideShowClass:
             self.currentInputIndex = 0
             self.textbox.delete(0, tk.END)
 
-    def send_tags(self, event=None):
-        self.currentInputIndex = 0
-        newTags = self.textbox.get()
-        if newTags in ['\\quit', '\\exit', '\\abort']:
-            self.master.quit()
-            return None
-        else:
-            self.input_strings.append(newTags)
-        taglist = self.input_strings[-1].split(' ')
-        tags = ','.join(taglist)
-        try:
-            os.system("cp "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+self.month+str(self.dateAndTime.year)+'/'+self.newName)
-            #Add entry to table
-            with open(NUDADBTABLE, 'a') as table:
-                table.write(self.newName+'\t'+'./nudaDBDir/'+self.month+str(self.dateAndTime.year)+'/'+'\t'+self.dateAndTime.strftime("%Y-%m-%d\t%H:%M:%S")+'\t'+tags+'\n')
-            #if using default import, move file from ./inbox/ to ./inbox/imported/
-            if os.path.isfile('./inbox/'+self.filename):
-                os.system("mv "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/imported/"+self.newName)
-        except:
-            print("copy problem!")
-        self.textbox.delete(0, tk.END)
-        if self.next_image():
-            self.tag_input()
-
-    def tag_input(self, event=None):
-        #Get file data
-        self.fullpath = os.path.abspath(self.listOfImagePaths[self.currentImageIndex])
-        self.filename = self.fullpath.split('/')[-1]
-        extension = self.filename.split('.')[-1]
-        self.dirpath = self.fullpath[:-len(self.filename)]
-        try:
-            fullexif=self.currentImageOriginal._getexif()
-            self.dateAndTime = datetime.datetime.strptime(fullexif[36867], "%Y:%m:%d %H:%M:%S")
-        except Exception as ex:
-            print(ex)
-            print("EXIF problem! Using file timestamp...")
-            try:
-                self.dateAndTime = datetime.datetime.fromtimestamp(os.path.getmtime(self.fullpath))
-            except Exception as ex:    
-                print(ex)
-                print("No file timestamp!? Crashing...")
-                self.master.quit()
-                return None
-    
-        self.month = MONTHS[self.dateAndTime.month-1]
-        #check for existing month directory, create if not exists
-        dirContents = os.listdir(NUDADBDIR)
-        dirCheck = NUDADBDIR+self.month+str(self.dateAndTime.year)
-        if self.month+str(self.dateAndTime.year) in dirContents:
-            pass
-            #print(dirCheck+'/'+"  exists!")
-        else:
-            print("Creating "+dirCheck)
-            os.system("mkdir "+dirCheck)
-    
-        #copy file     filename = last six characters of hashstring
-        monthContents = os.listdir(NUDADBDIR+self.month+str(self.dateAndTime.year))
-        fullHash = self.getHash(self.fullpath)
-        self.newName = fullHash[-6:]+'.'+extension
-        if self.newName in monthContents:
-            print("COLLISION!     Skipping...")
-            #if using default import, move file from ./inbox/ to ./inbox/skipped/
-            if os.path.isfile('./inbox/'+self.filename):
-                os.system("mv "+self.fullpath.replace(' ', "\ ")+" "+NUDADBDIR+"../inbox/skipped/"+self.newName)
-            if self.next_image():
-                self.tag_input()
-            else:
-                self.master.quit()
-                return None
-
-
     def next_image(self, event=None):
         if self.afterID is not None:
             self.master.after_cancel(self.afterID)
             self.afterID = None
         self.currentImageIndex += 1
         if self.currentImageIndex >= len(self.listOfImagePaths):
-            if self.showOrImport == 'show':
-                self.currentImageIndex = 0
-            elif self.showOrImport == 'import':
-                self.master.quit()
-                return False
+            self.currentImageIndex = 0
             else:
                 print("Something has gone very wrong...")
                 self.master.quit()

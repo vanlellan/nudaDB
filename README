@@ -50,6 +50,12 @@ TODO
 [ ] add ability to deliberately skip, or even delete, a file during import (button, ctrl-key, and/or command tag)
 [ ] add 2nd pickle file, in which keys are filenames and values are lists of tags
 [ ] add list of tags to flask page, either as captions under each image or as hover text
+[ ] automatically add filename (without suffix) as a tag
+[ ] compound tags (e.g. "Genus+Sciurus")
+	[ ] add both "Genus+" and "+Scurius" as tags
+	[ ] same for searching
+	[ ] this allows for a general search of all things with a tagged Genus
+[ ] strip-down old slideshow class to reimplement a pure slideshow (import stuff is now in importClass.py)
 
 Ideas
 [ ] change name to 'fresco'

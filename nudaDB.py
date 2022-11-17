@@ -21,6 +21,7 @@ import sys, os
 import tkinter as tk
 import pickle
 import importClass as imp 
+import slideShowClass as ssc
 
 if sys.argv[1] == "init":
     print("Initializing nudaDB into "+os.getcwd())
@@ -84,7 +85,7 @@ if sys.argv[1] == "tags":
 if sys.argv[1] == "search":
     tagList = sys.argv[2:]
     print('Searching for tag: ',tagList)
-    imageList = imp.getImagesMatchingTags(tagList)
+    imageList = ssc.getImagesMatchingTags(tagList)
     os.system("rm "+imp.NUDADBDIR+"../search/*")
     for result in imageList:
         filename = result.split('/')[-1]
@@ -95,16 +96,15 @@ if sys.argv[1] == "search":
                     print(line.rstrip())
 
 if sys.argv[1] == "slideshow":
-    print("slideshow feature is disabled pending refactor")
-#    tagList = sys.argv[2:]
-#    print('Starting slideshow with tags: ',tagList)
-#    imageList = imp.getImagesMatchingTags(tagList)
-#
-#    #initialize tk window
-#    slideshow = tk.Tk()
-#    slideshow.attributes('-type','dialog')
-#    my_slideshow = imp.importClass(slideshow, imageList, 'show')
-#    slideshow.mainloop()
+    tagList = sys.argv[2:]
+    print('Starting slideshow with tags: ',tagList)
+    imageList = ssc.getImagesMatchingTags(tagList)
+
+    #initialize tk window
+    slideshow = tk.Tk()
+    slideshow.attributes('-type','dialog')
+    my_slideshow = ssc.slideShowClass(slideshow, imageList)
+    slideshow.mainloop()
 
 if sys.argv[1] == "reset":
     try:
