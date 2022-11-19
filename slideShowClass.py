@@ -39,6 +39,7 @@ NUDADBDIR = os.getcwd() + '/nudaDBDir/'                            #this gets th
 #NUDADBTABLE = os.path.dirname(os.path.abspath(sys.argv[0])) + '/nudaDBTable.txt'
 NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+DELAY = 5000    #time delay to display each image in milliseconds
 
 def getFilesMatchingAllTags(listOfTags):
     #SLIDESHOW VERSION, RETURN LIST OF STRINGS, NOT LIST OF TUPLES
@@ -100,6 +101,7 @@ class slideShowClass:
 
         self.showpanel = tk.Label(master, image=self.currentImage)
         self.showpanel.pack(fill='both', expand='yes')
+        self.showpanel.config(bg="black")
 
         self.textbox = tk.Entry(master)
         self.textbox.focus()
@@ -208,7 +210,7 @@ class slideShowClass:
 
     def show_next(self, event=None):
         self.next_image(event)
-        self.afterID = self.master.after(2000,self.show_next)
+        self.afterID = self.master.after(DELAY,self.show_next)
 
     def show_stop(self, event):
         self.master.quit()
