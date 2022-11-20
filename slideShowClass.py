@@ -107,7 +107,7 @@ class slideShowClass:
         self.textbox.focus()
         self.textbox.bind("<Return>", self.new_search)
         self.textbox.bind("<Next>", self.show_next)    #Page Down
-        #self.textbox.bind("<Prior>", self.show_prior)    #Page Up
+        self.textbox.bind("<Prior>", self.show_prev)    #Page Up
         self.textbox.bind("<Up>", self.input_hist_prev)
         self.textbox.bind("<Down>", self.input_hist_next)
         self.textbox.bind("<Control-Key-w>", self.show_stop)
@@ -154,6 +154,7 @@ class slideShowClass:
         self.input_strings.append(newTags)
         taglist = self.input_strings[-1].split(' ')
         self.listOfImagePaths = getFilesMatchingAllTags(taglist)
+        self.sortImageListByShuffle()
         self.currentImageIndex = -1
         self.show_next()
         self.currentInputIndex = 0
@@ -209,6 +210,11 @@ class slideShowClass:
         return True
 
     def show_next(self, event=None):
+        self.next_image(event)
+        self.afterID = self.master.after(DELAY,self.show_next)
+
+    def show_prev(self, event=None):
+        self.currentImageIndex = max(0,self.currentImageIndex-2)
         self.next_image(event)
         self.afterID = self.master.after(DELAY,self.show_next)
 
