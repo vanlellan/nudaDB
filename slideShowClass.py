@@ -64,7 +64,7 @@ def getFilesMatchingAllTags(listOfTags):
     #        outputList.append((result,'video',ext))
     #    else:
     #        outputlist.append((result,'other',ext))
-    print("DEBUG: aFileList:", aFileList)
+    print(f"Found {len(aFileList)} Images matching tags: {listOfTags}")
     return aFileList
 
 def getImagesMatchingTags(listOfTags):
