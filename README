@@ -56,6 +56,7 @@ TODO
 	[ ] same for searching
 	[ ] this allows for a general search of all things with a tagged Genus
 [ ] strip-down old slideshow class to reimplement a pure slideshow (import stuff is now in importClass.py)
+[ ] write a proper man-page and/or command line help
 
 Ideas
 [ ] change name to 'fresco'
