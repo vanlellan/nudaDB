@@ -106,14 +106,20 @@ if sys.argv[1] == "search":
                     print(line.rstrip())
 
 if sys.argv[1] == "slideshow":
-    tagList = sys.argv[2:]
-    print('Starting slideshow with tags: ',tagList)
-    imageList = ssc.getFilesMatchingAllTags(tagList)
+    if len(sys.argv) == 2:
+        pickleFileName = "./tags.pickle"
+    elif len(sys.argv) == 3:
+        pickleFileName = sys.argv[2]
+    else:
+        print("Unknown input for slideshow.")
+
+    tagList = []
+    imageList = ssc.getFilesMatchingAllTags(tagList, pickleFileName)
 
     #initialize tk window
     slideshow = tk.Tk()
     slideshow.attributes('-type','dialog')
-    my_slideshow = ssc.slideShowClass(slideshow, imageList)
+    my_slideshow = ssc.slideShowClass(slideshow, imageList, pickleFileName)
     slideshow.mainloop()
 
 if sys.argv[1] == "reset":
