@@ -77,5 +77,12 @@ def search(keyword,page=None):
     print(full_filenames)
     return render_template("search.html", images = full_filenames, keyword = keyword, prevthisnext = [page-1, page, page+1], randTags = getRandomTags(10))
 
+@app.route('/<keyword>', methods=['POST'])
+@app.route('/<keyword>/<int:page>', methods=['POST'])
+def search_post(keyword,page=None):
+    search = request.form['searchbox']
+    hyphensearch = '-'.join(search.split(' '))
+    return redirect(url_for('search', keyword=hyphensearch))
+
 if __name__ == "__main__":
     app.run(debug=True, port=8080, host='0.0.0.0')

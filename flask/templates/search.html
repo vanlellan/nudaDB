@@ -9,6 +9,11 @@
 	<a href="/{{ keyword }}/{{ prevthisnext[0] }}">Prev Page</a>
 	<a href="/{{ keyword }}/{{ prevthisnext[2] }}">Next Page</a>
 	</div>
+	<div>
+	<form method="POST">
+		<input name="searchbox" autofocus>
+	</form>
+	</div>
 	<div style="float: right;">
 		Random Tags:
 		{% for tag in randTags %}
