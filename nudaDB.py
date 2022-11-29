@@ -66,20 +66,30 @@ else:
 
 
 if sys.argv[1] == "tags":
+    if len(sys.argv) > 2:
+        selectList = sys.argv[2:]
+        prefix = '-'.join(selectList)
+    else:
+        selectList = []
+        prefix = 'tags'
     tagDict = {}
     with open(imp.NUDADBTABLE, 'r') as table:
         for line in table:
+            keepBool = True
             if line[0] == '#':
                 continue
             else:
                 fname, path, date, time, tags = line.split('\t')
                 tagList = tags.rstrip().split(',')
                 print(fname, tagList)
-                if "nsfw" not in tagList:
+                for sel in selectList:
+                    if sel not in tagList:
+                       keepBool = False 
+                if "nsfw" not in tagList and keepBool:
                     for tag in tagList:
                         tagDict.setdefault(tag, []).append(path+fname)
     print(tagDict)
-    with open("tags.pickle","wb") as pickleFile:
+    with open(f"{prefix}.pickle","wb") as pickleFile:
         pickle.dump(tagDict, pickleFile, protocol=pickle.HIGHEST_PROTOCOL)
 
 if sys.argv[1] == "search":
@@ -96,14 +106,20 @@ if sys.argv[1] == "search":
                     print(line.rstrip())
 
 if sys.argv[1] == "slideshow":
-    tagList = sys.argv[2:]
-    print('Starting slideshow with tags: ',tagList)
-    imageList = ssc.getFilesMatchingAllTags(tagList)
+    if len(sys.argv) == 2:
+        pickleFileName = "./tags.pickle"
+    elif len(sys.argv) == 3:
+        pickleFileName = sys.argv[2]
+    else:
+        print("Unknown input for slideshow.")
+
+    tagList = []
+    imageList = ssc.getFilesMatchingAllTags(tagList, pickleFileName)
 
     #initialize tk window
     slideshow = tk.Tk()
     slideshow.attributes('-type','dialog')
-    my_slideshow = ssc.slideShowClass(slideshow, imageList)
+    my_slideshow = ssc.slideShowClass(slideshow, imageList, pickleFileName)
     slideshow.mainloop()
 
 if sys.argv[1] == "reset":

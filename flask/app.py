@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from flask import Flask, render_template
+from flask import Flask, redirect, request, render_template, url_for
 import pickle
 import os
 import random
@@ -57,8 +57,13 @@ numImages = 9
 
 @app.route('/')
 def home():
-    #dummy home page
-    return "APPEND your keywords to the address (dash delimited) to begin your Search! e.g. www.hostname.net/birthday-party to search for 'birthday' AND 'party'."
+    return render_template('home.html')
+
+@app.route('/', methods=['POST'])
+def home_post():
+    search = request.form['searchbox']
+    hyphensearch = '-'.join(search.split(' '))
+    return redirect(url_for('search', keyword=hyphensearch))
 
 @app.route('/<keyword>')
 @app.route('/<keyword>/<int:page>')
@@ -71,6 +76,13 @@ def search(keyword,page=None):
         full_filenames = [(os.path.join("..", app.config['DB_FOLDER'], f[0]),f[1],f[2]) for f in imageList[numImages*(page-1):numImages*page]]
     print(full_filenames)
     return render_template("search.html", images = full_filenames, keyword = keyword, prevthisnext = [page-1, page, page+1], randTags = getRandomTags(10))
+
+@app.route('/<keyword>', methods=['POST'])
+@app.route('/<keyword>/<int:page>', methods=['POST'])
+def search_post(keyword,page=None):
+    search = request.form['searchbox']
+    hyphensearch = '-'.join(search.split(' '))
+    return redirect(url_for('search', keyword=hyphensearch))
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080, host='0.0.0.0')

@@ -5,17 +5,23 @@
 	<link rel="stylesheet" href="../static/search.css">
 </head>
 <body>
-	<div>
-	<a href="/{{ keyword }}/{{ prevthisnext[0] }}">Prev Page</a>
-	<a href="/{{ keyword }}/{{ prevthisnext[2] }}">Next Page</a>
+	<div class='parent flex-parent'>
+		<div class='child flex-child'>
+		<a href="/{{ keyword }}/{{ prevthisnext[0] }}">Prev Page</a>
+		<a href="/{{ keyword }}/{{ prevthisnext[2] }}">Next Page</a>
+		</div>
+		<div class='child flex-child'>
+		<form method="POST">
+			<input name="searchbox" autofocus>
+		</form>
+		</div>
+		<div class='child flex-child'>
+			Random Tags:
+			{% for tag in randTags %}
+			<a href="/{{ tag }}">{{ tag }}</a>
+			{% endfor %}
+		</div>
 	</div>
-	<div style="float: right;">
-		Random Tags:
-		{% for tag in randTags %}
-		<a href="/{{ tag }}">{{ tag }}</a>
-		{% endfor %}
-	</div>
-	<br />
 	<hr>
 	<br />
 	<div class="row">

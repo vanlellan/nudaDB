@@ -41,11 +41,11 @@ NUDADBTABLE = os.getcwd() + '/nudaDBTable.txt'
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 DELAY = 5000    #time delay to display each image in milliseconds
 
-def getFilesMatchingAllTags(listOfTags):
+def getFilesMatchingAllTags(listOfTags, pickleFileName):
     #SLIDESHOW VERSION, RETURN LIST OF STRINGS, NOT LIST OF TUPLES
     #HARDCODE RETURN ONLY IMAGES
     listOfTags.append("image")
-    with open("./tags.pickle","rb") as pickleFile:
+    with open(pickleFileName,"rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
     aFileList = []
     outputList = []
@@ -67,8 +67,8 @@ def getFilesMatchingAllTags(listOfTags):
     print(f"Found {len(aFileList)} Images matching tags: {listOfTags}")
     return aFileList
 
-def getImagesMatchingTags(listOfTags):
-    with open("tags.pickle","rb") as pickleFile:
+def getImagesMatchingTags(listOfTags, pickleFileName):
+    with open(pickleFileName,"rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
     imagelist = []
     for tag in listOfTags:
@@ -78,9 +78,10 @@ def getImagesMatchingTags(listOfTags):
 
 class slideShowClass:
     #def __init__(self,master,listOfImagePaths,showOrImport):
-    def __init__(self,master,listOfImagePaths):
+    def __init__(self,master,listOfImagePaths, pickleFileName):
         self.master = master
         self.listOfImagePaths = listOfImagePaths
+        self.pickleFileName = pickleFileName
         self.input_strings = []
         self.currentInputIndex = 0
         self.afterID = None
@@ -153,7 +154,7 @@ class slideShowClass:
             return None
         self.input_strings.append(newTags)
         taglist = self.input_strings[-1].split(' ')
-        self.listOfImagePaths = getFilesMatchingAllTags(taglist)
+        self.listOfImagePaths = getFilesMatchingAllTags(taglist, self.pickleFileName)
         self.sortImageListByShuffle()
         self.currentImageIndex = -1
         self.show_next()

@@ -160,9 +160,12 @@ class importClass:
 
     def checkForCollisions(self, event=None):
         monthContents = os.listdir(NUDADBDIR+self.year+'-'+self.month)
+        #strip off extension so that 'jpg' and 'JPG' and 'jpeg' will collide
+        monthContents = [x.split('.')[0] for x in monthContents]
         fullHash = getHash(self.data[self.currentImageIndex]["fullpath"])
-        self.newName = fullHash[-6:]+'.'+self.data[self.currentImageIndex]["extension"]
-        if self.newName in monthContents:
+        hashTail = fullHash[-6:]
+        self.newName = hashTail+'.'+self.data[self.currentImageIndex]["extension"]
+        if hashTail in monthContents:
             print("COLLISION!     Skipping...")
             #if using default import, move file from ./inbox/ to ./inbox/skipped/
             if os.path.isfile('./inbox/'+self.data[self.currentImageIndex]["filename"]):
