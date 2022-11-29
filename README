@@ -57,6 +57,11 @@ TODO
 	[ ] this allows for a general search of all things with a tagged Genus
 [ ] strip-down old slideshow class to reimplement a pure slideshow (import stuff is now in importClass.py)
 [ ] write a proper man-page and/or command line help
+[ ] write function to auto-generate flask deployment, and subNuda task deployment
+[ ] rework "nudaDBDIR" symlink in subNuda flask deployment so that unauthorized files can't be manually accessed
+	[ ] instead of symlinking entire directory, symlink only individual files
+	[ ] this then needs to be updated everytime the tags are regenerated
+	[ ] on subNuda tag generation, check for flask deployment, and rewrite symlinks
 
 Ideas
 [ ] change name to 'fresco'
