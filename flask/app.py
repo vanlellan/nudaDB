@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from flask import Flask, render_template
+from flask import Flask, redirect, request, render_template, url_for
 import pickle
 import os
 import random
@@ -57,8 +57,13 @@ numImages = 9
 
 @app.route('/')
 def home():
-    #dummy home page
-    return "APPEND your keywords to the address (dash delimited) to begin your Search! e.g. www.hostname.net/birthday-party to search for 'birthday' AND 'party'."
+    return render_template('home.html')
+
+@app.route('/', methods=['POST'])
+def home_post():
+    search = request.form['searchbox']
+    hyphensearch = '-'.join(search.split(' '))
+    return redirect(url_for('search', keyword=hyphensearch))
 
 @app.route('/<keyword>')
 @app.route('/<keyword>/<int:page>')
