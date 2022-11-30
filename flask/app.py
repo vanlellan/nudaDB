@@ -5,14 +5,14 @@ import os
 import random
 
 def getRandomTags(aNum):
-    with open("../tags.pickle","rb") as pickleFile:
+    with open("./tags.pickle","rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
         allKeys = tagDict.keys() 
         randKeys = random.sample(allKeys, min(aNum,len(allKeys)))
         return randKeys
 
 def getImagesMatchingAnyTags(listOfTags):
-    with open("../tags.pickle","rb") as pickleFile:
+    with open("./tags.pickle","rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
     aImageList = []
     for tag in listOfTags:
@@ -27,7 +27,7 @@ def getImagesMatchingAnyTags(listOfTags):
     return aImageList
 
 def getFilesMatchingAllTags(listOfTags):
-    with open("../tags.pickle","rb") as pickleFile:
+    with open("./tags.pickle","rb") as pickleFile:
         tagDict = pickle.load(pickleFile)
     aFileList = []
     outputList = []

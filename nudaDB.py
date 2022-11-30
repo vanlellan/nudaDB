@@ -31,9 +31,15 @@ if sys.argv[1] == "init":
     os.system("mkdir ./inbox/imported/")
     os.system("mkdir ./inbox/skipped/")
     os.system("mkdir ./flask/")
+    os.system("mkdir ./flask/static/")
+    os.system("mkdir ./flask/templates/")
     installDir = os.path.join(os.path.split(os.path.realpath("/bin/nuda"))[0])+'/'
-    os.system("cp -r "+installDir+"flask/* ./flask/")
+    os.system("ln -s "+installDir+"flask/app.py ./flask/app.py")
     os.system("ln -s ../../nudaDBDir/ ./flask/static/nudaDBDir")
+    os.system("ln -s ../tags.pickle ./flask/tags.pickle")
+    os.system("ln -s "+installDir+"flask/static/search.css ./flask/static/search.css")
+    os.system("ln -s "+installDir+"flask/templates/search.html ./flask/templates/search.html")
+    os.system("ln -s "+installDir+"flask/templates/home.html ./flask/templates/home.html")
     if not os.path.exists(imp.NUDADBTABLE):
         print("Creating "+imp.NUDADBTABLE)
         with open(imp.NUDADBTABLE, 'w') as table:
@@ -69,10 +75,26 @@ if sys.argv[1] == "tags":
     if len(sys.argv) > 2:
         selectList = sys.argv[2:]
         prefix = '-'.join(selectList)
+        #check if subnuda flask exists, create it if not
+        subnudaFlaskName = os.getcwd()+'/'+prefix+'.flask'
+        if os.path.exists(subnudaFlaskName):
+            os.system("rm -r "+subnudaFlaskName+'/static/nudaDBDir/*')
+        else:
+            os.system("mkdir "+subnudaFlaskName)
+            os.system("mkdir "+subnudaFlaskName+'/static')
+            os.system("mkdir "+subnudaFlaskName+'/static/nudaDBDir')
+            os.system("mkdir "+subnudaFlaskName+'/templates')
+            installDir = os.path.join(os.path.split(os.path.realpath("/bin/nuda"))[0])+'/'
+            os.system("ln -s ../"+prefix+".pickle "+subnudaFlaskName+"/tags.pickle")
+            os.system("ln -s "+installDir+"flask/app.py "+subnudaFlaskName+"/app.py")
+            os.system("ln -s "+installDir+"flask/static/search.css "+subnudaFlaskName+"/static/search.css")
+            os.system("ln -s "+installDir+"flask/templates/search.html "+subnudaFlaskName+"/templates/search.html")
+            os.system("ln -s "+installDir+"flask/templates/home.html "+subnudaFlaskName+"/templates/home.html")
     else:
         selectList = []
         prefix = 'tags'
     tagDict = {}
+
     with open(imp.NUDADBTABLE, 'r') as table:
         for line in table:
             keepBool = True
@@ -81,14 +103,17 @@ if sys.argv[1] == "tags":
             else:
                 fname, path, date, time, tags = line.split('\t')
                 tagList = tags.rstrip().split(',')
-                print(fname, tagList)
                 for sel in selectList:
                     if sel not in tagList:
                        keepBool = False 
                 if "nsfw" not in tagList and keepBool:
+                    if len(sys.argv) > 2:
+                        if not os.path.exists(subnudaFlaskName+"/static/nudaDBDir/"+date[:-3]):
+                            os.system("mkdir "+subnudaFlaskName+"/static/nudaDBDir/"+date[:-3])
+                        os.system("ln -s ../../../../nudaDBDir/"+date[:-3]+"/"+fname+" "+subnudaFlaskName+"/static/nudaDBDir/"+date[:-3]+"/"+fname)
                     for tag in tagList:
                         tagDict.setdefault(tag, []).append(path+fname)
-    print(tagDict)
+    print(f"Pickling dictionary of {len(tagDict)} tags.")
     with open(f"{prefix}.pickle","wb") as pickleFile:
         pickle.dump(tagDict, pickleFile, protocol=pickle.HIGHEST_PROTOCOL)
 
