@@ -38,6 +38,8 @@ if sys.argv[1] == "init":
     os.system("ln -s ../../nudaDBDir/ ./flask/static/nudaDBDir")
     os.system("ln -s ../tags.pickle ./flask/tags.pickle")
     os.system("ln -s "+installDir+"flask/static/search.css ./flask/static/search.css")
+    os.system("ln -s "+installDir+"flask/static/home.css ./flask/static/home.css")
+    os.system("ln -s "+installDir+"flask/static/nuda-icon.svg ./flask/static/nuda-icon.svg")
     os.system("ln -s "+installDir+"flask/templates/search.html ./flask/templates/search.html")
     os.system("ln -s "+installDir+"flask/templates/home.html ./flask/templates/home.html")
     if not os.path.exists(imp.NUDADBTABLE):
@@ -88,6 +90,8 @@ if sys.argv[1] == "tags":
             os.system("ln -s ../"+prefix+".pickle "+subnudaFlaskName+"/tags.pickle")
             os.system("ln -s "+installDir+"flask/app.py "+subnudaFlaskName+"/app.py")
             os.system("ln -s "+installDir+"flask/static/search.css "+subnudaFlaskName+"/static/search.css")
+            os.system("ln -s "+installDir+"flask/static/home.css "+subnudaFlaskName+"/static/home.css")
+            os.system("ln -s "+installDir+"flask/static/nuda-icon.svg "+subnudaFlaskName+"/static/nuda-icon.svg")
             os.system("ln -s "+installDir+"flask/templates/search.html "+subnudaFlaskName+"/templates/search.html")
             os.system("ln -s "+installDir+"flask/templates/home.html "+subnudaFlaskName+"/templates/home.html")
     else:

@@ -57,7 +57,7 @@ numImages = 9
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', icon = os.path.join('static','nuda-icon.svg'))
 
 @app.route('/', methods=['POST'])
 def home_post():

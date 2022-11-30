@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="105mm"
+   height="74mm"
+   viewBox="0 0 105 74"
+   version="1.1"
+   id="svg5"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient5484">
+      <stop
+         style="stop-color:#78a0ff;stop-opacity:1;"
+         offset="0"
+         id="stop5480" />
+      <stop
+         style="stop-color:#8867ff;stop-opacity:0;"
+         offset="1"
+         id="stop5482" />
+    </linearGradient>
+    <radialGradient
+       xlink:href="#linearGradient5484"
+       id="radialGradient5491"
+       cx="52.821239"
+       cy="51.405586"
+       fx="52.821239"
+       fy="51.405586"
+       r="52.5"
+       gradientTransform="matrix(0.91580846,0.54281772,-0.20842215,0.35163694,14.8447,-9.7180258)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     id="layer1">
+    <rect
+       style="fill:url(#radialGradient5491);fill-opacity:1;stroke-width:1.265;stroke-linejoin:round"
+       id="rect438"
+       width="105"
+       height="74"
+       x="0"
+       y="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:25.4px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
+       x="21.785597"
+       y="46.469189"
+       id="text113"><tspan
+         id="tspan111"
+         style="stroke-width:0.264583"
+         x="21.785597"
+         y="46.469189">nuda</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
+       x="4.9108644"
+       y="59.582729"
+       id="text117"><tspan
+         id="tspan115"
+         style="font-size:5.64444px;stroke-width:0.264583"
+         x="4.9108644"
+         y="59.582729">the unadorned media database</tspan></text>
+  </g>
+</svg>
