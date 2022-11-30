@@ -38,11 +38,11 @@ TODO
 [ ] ability to pause and resume the slideshow
 [ ] fix bug when last file of import is a collision (tag input window doesn't close itself)
 [X] slideshow: shuffle all matching images
-[ ] slideshow: pause/resume with spacebar
-[ ] slideshow: forward/backward one step with arrow keys
-[ ] change nudaDBDir subdirectory name format to YYYY-MM rather than "AUG2019" format
+[ ] slideshow: forward/backward one step
+[X] change nudaDBDir subdirectory name format to YYYY-MM rather than "AUG2019" format
 [ ] automatically handle files with spaces in the filename
-[ ] add feature: generate sub-database. output a full nuda database filled with the output of a search
+[-] add feature: generate sub-database. output a full nuda database filled with the output of a search
+	[X] handle by "subnuda" deploy with custom pickle file
 [ ] add feature: GUI command to edit tags during slideshow
 [X] add ability to import video, use vlc embedded in tk window
 [ ] ability to gracefully merge two DBs (merge, import, push, pull... choose best word for command)
@@ -55,13 +55,14 @@ TODO
 	[ ] add both "Genus+" and "+Scurius" as tags
 	[ ] same for searching
 	[ ] this allows for a general search of all things with a tagged Genus
-[ ] strip-down old slideshow class to reimplement a pure slideshow (import stuff is now in importClass.py)
+[X] strip-down old slideshow class to reimplement a pure slideshow (import stuff is now in importClass.py)
 [ ] write a proper man-page and/or command line help
-[ ] write function to auto-generate flask deployment, and subNuda task deployment
-[ ] rework "nudaDBDIR" symlink in subNuda flask deployment so that unauthorized files can't be manually accessed
-	[ ] instead of symlinking entire directory, symlink only individual files
-	[ ] this then needs to be updated everytime the tags are regenerated
-	[ ] on subNuda tag generation, check for flask deployment, and rewrite symlinks
+[X] write function to auto-generate flask deployment, and subNuda task deployment
+	[ ] add gunicorn deploy stuff to repo
+[X] rework "nudaDBDIR" symlink in subNuda flask deployment so that unauthorized files can't be manually accessed
+	[X] instead of symlinking entire directory, symlink only individual files
+	[X] this then needs to be updated everytime the tags are regenerated
+	[X] on subNuda tag generation, check for flask deployment, and rewrite symlinks
 
 Ideas
 [ ] change name to 'fresco'
