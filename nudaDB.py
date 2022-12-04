@@ -201,7 +201,7 @@ if sys.argv[1] == "merge":
                     continue
                 else:
                     fname, path, date, time, tags = line.split('\t')
-                    if os.path.isfile(os.getcwd()+'/nudaDBDir/'+path+fname):
+                    if os.path.isfile(os.getcwd()+'/nudaDBDir/'+path[1:]+fname):
                         #print(f"{path[1:]+fname} already here!")
                         continue
                     else:
