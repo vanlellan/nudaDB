@@ -185,3 +185,28 @@ if sys.argv[1] == "import":
     my_importGUI = imp.importClass(importGUI, inFileNames)
     importGUI.mainloop()
 
+if sys.argv[1] == "merge":
+    if len(sys.argv) == 3:
+        thatDir = sys.argv[2]
+        thisDir = os.getcwd()
+    else:
+        print("Must specify target directory to merge FROM.")
+        sys.exit()
+    print(f"Merging thatDir = {thatDir}")
+    print(f"into thisDir = {thisDir}")
+    with open(thatDir+'/nudaDBTable.txt', 'r') as thatTable:
+        with open(thisDir+'/nudaDBTable.txt', 'a') as thisTable:
+            for line in thatTable:
+                if line[0] == '#':
+                    continue
+                else:
+                    fname, path, date, time, tags = line.split('\t')
+                    if os.path.isfile(os.getcwd()+'/nudaDBDir/'+path+fname):
+                        #print(f"{path[1:]+fname} already here!")
+                    else:
+                        print(f"{path[1:]+fname} is new! Merging here.")
+                        thisTable.write(line)
+                        if not os.path.exists(thisDir+path[1:]):
+                            os.system(f"mkdir {thisDir+path[1:]}")
+                        os.system(f"cp {thatDir+path[1:]+fname} {thisDir+path[1:]+fname}")
+
