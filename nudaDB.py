@@ -203,6 +203,7 @@ if sys.argv[1] == "merge":
                     fname, path, date, time, tags = line.split('\t')
                     if os.path.isfile(os.getcwd()+'/nudaDBDir/'+path+fname):
                         #print(f"{path[1:]+fname} already here!")
+                        continue
                     else:
                         print(f"{path[1:]+fname} is new! Merging here.")
                         thisTable.write(line)
