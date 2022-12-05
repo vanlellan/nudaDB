@@ -209,5 +209,5 @@ if sys.argv[1] == "merge":
                         thisTable.write(line)
                         if not os.path.exists(thisDir+path[1:]):
                             os.system(f"mkdir {thisDir+path[1:]}")
-                        os.system(f"cp {thatDir+path[1:]+fname} {thisDir+path[1:]+fname}")
+                        os.system(f"cp -n {thatDir+path[1:]+fname} {thisDir+path[1:]+fname}")
 
