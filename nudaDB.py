@@ -202,9 +202,8 @@ if sys.argv[1] == "merge":
                 else:
                     fname, path, date, time, tags = line.split('\t')
                     maybeFile = os.path.abspath(os.getcwd()+path[1:]+fname)
-                    print("maybeFile name: ", maybeFile)
                     if os.path.isfile(maybeFile):
-                        print(f"{path[1:]+fname} already here!")
+                        #print(f"{path[1:]+fname} already here!")
                         continue
                     else:
                         print(f"{path[1:]+fname} is new! Merging here.")
