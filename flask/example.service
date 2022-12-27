@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn instance to serve nudaDB
+After=network.target
+
+[Service]
+User=pi
+Group=www-data
+WorkingDirectory=/path/to/repo/flask
+ExecStart=python3 /path/to/repo/flask/gunicorn3 --user pi --group www-data --workers 2 --bind 0.0.0.0:8000 -m 007 wsgi:app
+
+[Install]
+WantedBy=multi-user.target
