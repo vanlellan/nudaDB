@@ -85,4 +85,4 @@ def search_post(keyword,page=None):
     return redirect(url_for('search', keyword=hyphensearch))
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080, host='0.0.0.0')
+    app.run(debug=True, port=8001, host='0.0.0.0')
