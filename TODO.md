@@ -1,6 +1,4 @@
-nudaDB README
-
-TODO
+## TODO
 [X] make path saved in table relative to directory holding nudaDB.py, to allow use on removable memory
 [X] use file timestamp if no EXIF data
 [X] for import, display image on screen and then prompt for tags
@@ -15,7 +13,7 @@ TODO
 [X] change name to nudusDB/nudaDB/nudumDB. ('nudus' is latin for simple/unadorned/bare)
 [X] make it 'standalone' executable
 [X] make 'install' command to add it to bin and create ./inbox/ and ./inbox/imported/ directories
-[ ] write real README
+[X] write real README
 [X] implement tag dictionary for searching
 [X] test ability to gracefully abort importing
 [X] move collision checking and skip before prompt for tags
@@ -63,8 +61,10 @@ TODO
 	[X] instead of symlinking entire directory, symlink only individual files
 	[X] this then needs to be updated everytime the tags are regenerated
 	[X] on subNuda tag generation, check for flask deployment, and rewrite symlinks
+[ ] change name to "nuda"
+[ ] add man page generation and installation into nuda-install
 
-Ideas
+## Ideas
 [ ] change name to 'fresco'
 	or 'rat' (Rapid Album Tagger)
 	or 'itad' (Image Tag and Display)
