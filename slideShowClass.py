@@ -223,6 +223,8 @@ class slideShowClass:
         self.master.quit()
 
     def makeThumb(self, imagePath):
+        targetW = self.master.winfo_width()
+        targetH = self.master.winfo_height()-50
         thumb = Image.open(imagePath)
         self.currentImageOriginal = Image.open(imagePath)
         try:
@@ -233,5 +235,9 @@ class slideShowClass:
         if orientation in self.rotations:
             thumb = thumb.rotate(self.rotations[orientation], expand=1)
         self.master.update_idletasks()
-        thumb.thumbnail((self.master.winfo_width(),self.master.winfo_height()-50))
+        thumb.thumbnail((targetW, targetH))
+        if thumb.size[0] < targetW and thumb.size[1] < targetH:
+            scaleFactor = min((targetW/thumb.size[0], targetH/thumb.size[1]))
+            print("scaleFactor = ", scaleFactor)
+            thumb = thumb.resize((int(thumb.size[0]*scaleFactor), int(thumb.size[1]*scaleFactor)))
         return thumb
