@@ -40,4 +40,4 @@ Currently, **nuda** has no options, only git-style commands
 : Merge all imported files from TARGET directory into current working directory. Files that already exist in the current database are skipped.
 
 # COPYRIGHT
-Copyright 2018 Randall Evan McClellan. License GPLv3+: GNU GPL version 3 or later <https://gnu.org/license/gpl.html>. This is a free softwareL you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
+Copyright 2018 Randall Evan McClellan. License GPLv3+: GNU GPL version 3 or later <https://gnu.org/license/gpl.html>. This is a free software. You are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
