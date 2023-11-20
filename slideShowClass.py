@@ -104,6 +104,11 @@ class slideShowClass:
         self.showpanel.pack(fill='both', expand='yes')
         self.showpanel.config(bg="black")
 
+        self.Hints = tk.Text(master, height=1)
+        self.Hints.insert(tk.INSERT, "Previous (Page Up)_____Next (Page Down)_____")
+        self.Hints.insert(tk.END,"Exit (Ctrl-w)")
+        self.Hints.pack()
+
         self.textbox = tk.Entry(master)
         self.textbox.focus()
         self.textbox.bind("<Return>", self.new_search)
@@ -238,6 +243,5 @@ class slideShowClass:
         thumb.thumbnail((targetW, targetH))
         if thumb.size[0] < targetW and thumb.size[1] < targetH:
             scaleFactor = min((targetW/thumb.size[0], targetH/thumb.size[1]))
-            print("scaleFactor = ", scaleFactor)
             thumb = thumb.resize((int(thumb.size[0]*scaleFactor), int(thumb.size[1]*scaleFactor)))
         return thumb
