@@ -310,7 +310,7 @@ class importClass:
         self.datebox.insert(0, self.data[self.currentImageIndex]["datetime"].strftime("%Y:%m:%d %H:%M:%S"))
         self.label.config(text="Importing File: "+self.data[self.currentImageIndex]["filename"])
         if self.data[self.currentImageIndex]["assessment"] == "image":
-            self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((self.width,self.height), Image.ANTIALIAS)
+            self.currentImage = Image.open(self.data[self.currentImageIndex]["fullpath"]).resize((self.width,self.height), Image.LANCZOS)
             self.currentTkImage = ImageTk.PhotoImage(image=self.currentImage)
             self.showpanel.config(image = self.currentTkImage)
             self.frameImg.tkraise()
